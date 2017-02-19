@@ -1,11 +1,13 @@
-import numpy as np
 from math import sqrt, pi, sin, cos
 
+import numpy as np
+
+from lib import cmbplot
 from lib import minkowski_1
 
-L_max_field = 7
-L_max_polynom = 7
-N = 8
+L_max_field = 16
+L_max_polynom = 16
+N = 1024
 
 
 def coef_1(in_l, in_m):
@@ -124,6 +126,8 @@ T = np.zeros(N)
 a_coef = np.zeros((L_max_field + 1, L_max_field + 1))
 b_coef = np.zeros((L_max_field + 1, L_max_field + 1))
 
+a_coef[3][3] = 1.0
+
 for m in xrange(0, L_max_field + 1):
     for l in xrange(0, m):
         a_coef[m][l] = 0.0
@@ -134,8 +138,8 @@ for l in xrange(0, L_max_field + 1):
 a_coef[0][0] = 0.0
 b_coef[0][0] = 0.0
 a_coef[0][1] = 0.0
-a_coef[1][1] = 1.0
-b_coef[0][1] = 1.0
+a_coef[1][1] = 0.0
+b_coef[0][1] = 0.0
 b_coef[1][1] = 0.0
 
 C = np.zeros((L_max_field + 1))
@@ -281,18 +285,18 @@ for j in xrange(1, N / 2):
 field_xy = np.zeros((N + 1, N / 2 + 1))
 for j in xrange(1, N / 2):
 
-    theta = 2 * pi * j / N
+    theta = 2.0 * pi * j / N
 
     for m in xrange(0, L_max_field + 1):
         for l in xrange(m, L_max_field + 1):
             func1 += a_coef[m][l] * F_xy[j][m][l]
             func2 += b_coef[m][l] * F_xy[j][m][l]
 
-            Fa[j][m] = func1
-            Fb[j][m] = func2
+        Fa[j][m] = func1
+        Fb[j][m] = func2
 
-            func1 = 0.0
-            func2 = 0.0
+        func1 = 0.0
+        func2 = 0.0
 
         T = - np.imag(np.fft.fft(Fa[j])) + np.real(np.fft.fft(Fb[j]))
 
@@ -314,4 +318,8 @@ field /= sigma_0_map
 print minkowski_1.area(y, field)
 print minkowski_1.length(x, y, field)
 
-print field
+my_map = cmbplot.ortho(x, y, field)
+minkowski_1.type_points(x, y, field, field_x, field_y, field_xx, field_yy, field_xy, 0.0, 0.0, 0.0, my_cmbmap=my_map)
+cmbplot.level_plot(my_map, field_x, x, y, 0.0)
+cmbplot.level_plot(my_map, field_y, x, y, 0.0)
+cmbplot.show()

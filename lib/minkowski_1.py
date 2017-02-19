@@ -31,7 +31,7 @@ def length(x, y, field, level=0.0):
     for i in xrange(0, n):
         for j in xrange(1, n / 2):
 
-            h_theta = fabs(y[n / 2 + 1][n / 4])
+            h_theta = fabs(y[n / 2 + 1][n / 4 + 1])
             h_phi = fabs(x[n / 4][j] - x[n / 4 + 1][j])
 
             if f[i][j] == 0.0 and (f[i][j + 1] == 0.0 or f[i + 1][j] == 0.0):
@@ -115,10 +115,10 @@ def condition_1(xx, yy, xy):
             return 1
 
 
-def type_points(x, y, f, fx, fy, fxx, fyy, fxy, sigma_0, sigma_1, sigma_2, my_file=False, my_map=False,
+def type_points(x, y, f, fx, fy, fxx, fyy, fxy, sigma_0, sigma_1, sigma_2, my_file=False, my_cmbmap=False,
                 up_bounds=False, down_bounds=False, whitelist=False, whitelist_flag=False):
     from numpy import zeros
-    from math import fabs
+    from math import fabs, pi
     from lib.distance_1 import s2, cross
 
     n = f.shape[0] - 1
@@ -148,7 +148,7 @@ def type_points(x, y, f, fx, fy, fxx, fyy, fxy, sigma_0, sigma_1, sigma_2, my_fi
 
             if ((whitelist_flag != False) and (whitelist[i][j] == 0)) or (whitelist_flag == False):
 
-                h_theta = fabs(y[n / 2 + 1][n / 4])
+                h_theta = fabs(y[n / 2 + 1][n / 4 + 1])
                 h_phi = fabs(x[n / 4][j] - x[n / 4 + 1][j])
 
                 if fx[i][j] * fx[i][j + 1] < 0.0:
@@ -304,9 +304,37 @@ def type_points(x, y, f, fx, fy, fxx, fyy, fxy, sigma_0, sigma_1, sigma_2, my_fi
                         theta_precision = theta_a
                         flag = 1
 
-                    if (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= - theta_a <= y[i][j + 1]):
+                    elif (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= - theta_a <= y[i][j + 1]):
 
                         phi_precision = phi_a
+                        theta_precision = - theta_a
+                        flag = 1
+
+                    elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
+                            and (y[i][j] <= theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a + pi
+                        theta_precision = theta_a
+                        flag = 1
+
+                    elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
+                            and (y[i][j] <= theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a - pi
+                        theta_precision = theta_a
+                        flag = 1
+
+                    elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
+                            and (y[i][j] <= - theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a + pi
+                        theta_precision = - theta_a
+                        flag = 1
+
+                    elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
+                            and (y[i][j] <= - theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a - pi
                         theta_precision = - theta_a
                         flag = 1
 
@@ -356,11 +384,11 @@ def type_points(x, y, f, fx, fy, fxx, fyy, fxy, sigma_0, sigma_1, sigma_2, my_fi
                             n_sad -= 1
                             ms = 100
 
-                        if my_map:
+                        if my_cmbmap:
 
                             from lib.cmbplot import point
 
-                            point(my_map, phi_precision, theta_precision, ms, my_type)
+                            point(my_cmbmap, phi_precision, theta_precision, ms, my_type)
 
                         if my_file:
 
@@ -388,9 +416,37 @@ def type_points(x, y, f, fx, fy, fxx, fyy, fxy, sigma_0, sigma_1, sigma_2, my_fi
                         theta_precision = theta_a
                         flag = 1
 
-                    if (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= - theta_a <= y[i][j + 1]):
+                    elif (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= - theta_a <= y[i][j + 1]):
 
                         phi_precision = phi_a
+                        theta_precision = - theta_a
+                        flag = 1
+
+                    elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
+                            and (y[i][j] <= theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a + pi
+                        theta_precision = theta_a
+                        flag = 1
+
+                    elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
+                            and (y[i][j] <= theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a - pi
+                        theta_precision = theta_a
+                        flag = 1
+
+                    elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
+                            and (y[i][j] <= - theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a + pi
+                        theta_precision = - theta_a
+                        flag = 1
+
+                    elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
+                            and (y[i][j] <= - theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a - pi
                         theta_precision = - theta_a
                         flag = 1
 
@@ -440,10 +496,10 @@ def type_points(x, y, f, fx, fy, fxx, fyy, fxy, sigma_0, sigma_1, sigma_2, my_fi
                             n_sad -= 1
                             ms = 100
 
-                        if my_map:
+                        if my_cmbmap:
                             from lib.cmbplot import point
 
-                            point(my_map, phi_precision, theta_precision, ms, my_type)
+                            point(my_cmbmap, phi_precision, theta_precision, ms, my_type)
 
                         if my_file:
                             my_file.write(repr(f[i][j]) + '    ' + repr(phi_precision) + '    ' +
@@ -457,3 +513,240 @@ def type_points(x, y, f, fx, fy, fxx, fyy, fxy, sigma_0, sigma_1, sigma_2, my_fi
 
     if down_bounds != False or up_bounds != False:
         return g, n_max, n_min, n_sad
+
+
+def null_points(x, y, f, fx, fy, my_file=False, my_cmbmap=False):
+
+    from numpy import zeros
+    from math import fabs, pi
+    from lib.distance_1 import cross
+
+    n = f.shape[0] - 1
+
+    z_x = zeros((n, n / 2))
+    z_y = zeros((n, n / 2))
+
+    whitelist = zeros((n, n / 2))
+
+    phi1a = 0.0
+    phi1b = 0.0
+
+    phi2a = 0.0
+    phi2b = 0.0
+
+    theta1a = 0.0
+    theta1b = 0.0
+
+    theta2a = 0.0
+    theta2b = 0.0
+
+    for i in xrange(0, n):
+        for j in xrange(1, n / 2):
+
+            h_theta = fabs(y[n / 2 + 1][n / 4 + 1])
+            h_phi = fabs(x[n / 4][j] - x[n / 4 + 1][j])
+
+            if fx[i][j] * fx[i][j + 1] < 0.0:
+
+                if fx[i][j] * fx[i + 1][j] < 0.0:
+
+                    phi1a = x[i][j]
+                    theta1a = y[i][j] + h_theta * fabs(fx[i][j]) / (fabs(fx[i][j]) + fabs(fx[i][j + 1]))
+
+                    phi1b = x[i][j] + h_phi * fabs(fx[i][j]) / (fabs(fx[i][j]) + fabs(fx[i + 1][j]))
+                    theta1b = y[i][j]
+
+                    z_x[i][j] = 1
+
+                elif fx[i + 1][j] * fx[i + 1][j + 1] < 0.0:
+
+                    phi1a = x[i][j]
+                    theta1a = y[i][j] + h_theta * fabs(fx[i][j]) / (fabs(fx[i][j]) + fabs(fx[i][j + 1]))
+
+                    phi1b = x[i + 1][j]
+                    theta1b = y[i + 1][j] + h_theta * fabs(fx[i + 1][j]) / (fabs(fx[i + 1][j])
+                                                                            + fabs(fx[i + 1][j + 1]))
+
+                    z_x[i][j] = 1
+
+                elif fx[i][j + 1] * fx[i + 1][j + 1] < 0.0:
+
+                    phi1a = x[i][j]
+                    theta1a = y[i][j] + h_theta * fabs(fx[i][j]) / (fabs(fx[i][j]) + fabs(fx[i][j + 1]))
+
+                    phi1b = x[i][j + 1] + h_phi * fabs(fx[i][j + 1]) / (fabs(fx[i][j + 1]) + fabs(fx[i + 1][j + 1]))
+                    theta1b = y[i][j + 1]
+
+                    z_x[i][j] = 1
+
+            elif fx[i][j] * fx[i + 1][j] < 0.0:
+
+                if fx[i + 1][j] * fx[i + 1][j + 1] < 0.0:
+
+                    phi1a = x[i][j] + h_phi * fabs(fx[i][j]) / (fabs(fx[i][j]) + fabs(fx[i + 1][j]))
+                    theta1a = y[i][j]
+
+                    phi1b = x[i + 1][j]
+                    theta1b = y[i + 1][j] + h_theta * fabs(fx[i + 1][j]) / (
+                        fabs(fx[i + 1][j]) + fabs(fx[i + 1][j + 1]))
+
+                    z_x[i][j] = 1
+
+                elif fx[i][j + 1] * fx[i + 1][j + 1] < 0.0:
+
+                    phi1a = x[i][j] + h_phi * fabs(fx[i][j]) / (fabs(fx[i][j]) + fabs(fx[i + 1][j]))
+                    theta1a = y[i][j]
+
+                    phi1b = x[i][j + 1] + h_phi * fabs(fx[i][j + 1]) / (fabs(fx[i][j + 1]) + fabs(fx[i + 1][j + 1]))
+                    theta1b = y[i][j + 1]
+
+                    z_x[i][j] = 1
+
+            elif fx[i + 1][j] * fx[i + 1][j + 1] < 0.0:
+
+                if fx[i][j + 1] * fx[i + 1][j + 1] < 0.0:
+                    phi1a = x[i + 1][j]
+                    theta1a = y[i + 1][j] + h_theta * fabs(fx[i + 1][j]) / (
+                        fabs(fx[i + 1][j]) + fabs(fx[i + 1][j + 1]))
+
+                    phi1b = x[i][j + 1] + h_phi * fabs(fx[i][j + 1]) / (fabs(fx[i][j + 1]) + fabs(fx[i + 1][j + 1]))
+                    theta1b = y[i][j + 1]
+
+                    z_x[i][j] = 1
+
+            if fy[i][j] * fy[i][j + 1] < 0.0:
+
+                if fy[i][j] * fy[i + 1][j] < 0.0:
+
+                    phi2a = x[i][j]
+                    theta2a = y[i][j] + h_theta * fabs(fy[i][j]) / (fabs(fy[i][j]) + fabs(fy[i][j + 1]))
+
+                    phi2b = x[i][j] + h_phi * fabs(fy[i][j]) / (fabs(fy[i][j]) + fabs(fy[i + 1][j]))
+                    theta2b = y[i][j]
+
+                    z_y[i][j] = 1
+
+                elif fy[i + 1][j] * fy[i + 1][j + 1] < 0.0:
+
+                    phi2a = x[i][j]
+                    theta2a = y[i][j] + h_theta * fabs(fy[i][j]) / (fabs(fy[i][j]) + fabs(fy[i][j + 1]))
+
+                    phi2b = x[i + 1][j]
+                    theta2b = y[i + 1][j] + h_theta * fabs(fy[i + 1][j]) / (
+                        fabs(fy[i + 1][j]) + fabs(fy[i + 1][j + 1]))
+
+                    z_y[i][j] = 1
+
+                elif fy[i][j + 1] * fy[i + 1][j + 1] < 0.0:
+
+                    phi2a = x[i][j]
+                    theta2a = y[i][j] + h_theta * fabs(fy[i][j]) / (fabs(fy[i][j]) + fabs(fy[i][j + 1]))
+
+                    phi2b = x[i][j + 1] + h_phi * fabs(fy[i][j + 1]) / (fabs(fy[i][j + 1]) + fabs(fy[i + 1][j + 1]))
+                    theta2b = y[i][j + 1]
+
+                    z_y[i][j] = 1
+
+            elif fy[i][j] * fy[i + 1][j] < 0.0:
+
+                if fy[i + 1][j] * fy[i + 1][j + 1] < 0.0:
+
+                    phi2a = x[i][j] + h_phi * fabs(fy[i][j]) / (fabs(fy[i][j]) + fabs(fy[i + 1][j]))
+                    theta2a = y[i][j]
+
+                    phi2b = x[i + 1][j]
+                    theta2b = y[i + 1][j] + h_theta * fabs(fy[i + 1][j]) / (
+                        fabs(fy[i + 1][j]) + fabs(fy[i + 1][j + 1]))
+
+                    z_y[i][j] = 1
+
+                elif fy[i][j + 1] * fy[i + 1][j + 1] < 0.0:
+
+                    phi2a = x[i][j] + h_phi * fabs(fy[i][j]) / (fabs(fy[i][j]) + fabs(fy[i + 1][j]))
+                    theta2a = y[i][j]
+
+                    phi2b = x[i][j + 1] + h_phi * fabs(fy[i][j + 1]) / (fabs(fy[i][j + 1]) + fabs(fy[i + 1][j + 1]))
+                    theta2b = y[i][j + 1]
+
+                    z_y[i][j] = 1
+
+            elif fy[i + 1][j] * fy[i + 1][j + 1] < 0.0:
+
+                if fy[i][j + 1] * fy[i + 1][j + 1] < 0.0:
+                    phi2a = x[i + 1][j]
+                    theta2a = y[i + 1][j] + h_theta * fabs(fy[i + 1][j]) / (
+                        fabs(fy[i + 1][j]) + fabs(fy[i + 1][j + 1]))
+
+                    phi2b = x[i][j + 1] + h_phi * fabs(fy[i][j + 1]) / (fabs(fy[i][j + 1]) + fabs(fy[i + 1][j + 1]))
+                    theta2b = y[i][j + 1]
+
+                    z_y[i][j] = 1
+
+            if z_y[i][j] != 0 and z_x[i][j] != 0:
+
+                flag = 0
+
+                phi_precision = 0.0
+                theta_precision = 0.0
+
+                phi_a, theta_a = cross(phi1a, theta1a, phi1b, theta1b, phi2a, theta2a, phi2b, theta2b)
+
+                if (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= theta_a <= y[i][j + 1]):
+
+                    phi_precision = phi_a
+                    theta_precision = theta_a
+                    flag = 1
+
+                elif (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= - theta_a <= y[i][j + 1]):
+
+                    phi_precision = phi_a
+                    theta_precision = - theta_a
+                    flag = 1
+
+                elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
+                        and (y[i][j] <= theta_a <= y[i][j + 1]):
+
+                    phi_precision = phi_a + pi
+                    theta_precision = theta_a
+                    flag = 1
+
+                elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
+                        and (y[i][j] <= theta_a <= y[i][j + 1]):
+
+                    phi_precision = phi_a - pi
+                    theta_precision = theta_a
+                    flag = 1
+
+                elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
+                        and (y[i][j] <= - theta_a <= y[i][j + 1]):
+
+                    phi_precision = phi_a + pi
+                    theta_precision = - theta_a
+                    flag = 1
+
+                elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
+                        and (y[i][j] <= - theta_a <= y[i][j + 1]):
+
+                    phi_precision = phi_a - pi
+                    theta_precision = - theta_a
+                    flag = 1
+
+                if flag == 1:
+
+                    if my_cmbmap:
+
+                        from lib.cmbplot import point
+
+                        ms = 4
+                        my_type = '*'
+
+                        point(my_cmbmap, phi_precision, theta_precision, ms, my_type)
+
+                    if my_file:
+
+                        my_file.write(repr(f[i][j]) + '    ' + repr(phi_precision) + '    ' +
+                                      repr(theta_precision) + '    ' + '\n')
+
+                    whitelist[i][j] = 1
+
+    return whitelist
