@@ -65,6 +65,36 @@ def level_plot(in_cmbmap, field, x, y, level):
     in_cmbmap.contour(x * rad, y * rad, field - level, 1, colors='k', latlon=True)
 
 
+def polarization(size, in_cmbmap, q, u, x, y):
+    from numpy import arctan, reciprocal
+    from math import pi, fabs, cos, sin
+
+    rad = 180.0 / pi
+
+    phi_map = 0.5 * arctan(u * reciprocal(q))
+    phi_normal_map = 0.5 * arctan(u * reciprocal(q))
+
+    for j in xrange(1, size / 2):
+
+        h_phi = fabs(x[size / 4][j] - x[size / 4 + 1][j])
+
+        for i in xrange(1, size):
+
+            if (q[i][j] >= 0) and (u[i][j] >= 0):
+                phi_normal_map[i][j] = phi_map[i][j]
+            elif (q[i][j] <= 0) and (u[i][j] >= 0):
+                phi_normal_map[i][j] = phi_map[i][j] + pi / 2
+            elif (q[i][j] >= 0) and (u[i][j] <= 0):
+                phi_normal_map[i][j] = phi_map[i][j]
+            elif (q[i][j] <= 0) and (u[i][j] <= 0):
+                phi_normal_map[i][j] = phi_map[i][j] - pi / 2
+
+            in_cmbmap.drawgreatcircle(rad*x[i][j], rad*y[i][j], rad*(x[i][j] + cos(phi_normal_map[i][j])*0.2*h_phi),
+                                  rad*(y[i][j]+sin(phi_normal_map[i][j])*0.2*h_phi), linewidth=1, color='k')
+            in_cmbmap.drawgreatcircle(rad * x[i][j], rad * y[i][j], rad*(x[i][j] - cos(phi_normal_map[i][j])*0.2*h_phi),
+                                  rad*(y[i][j]-sin(phi_normal_map[i][j])*0.2*h_phi), linewidth=1, color='k')
+
+
 def show():
     import matplotlib.pyplot as plt
 
