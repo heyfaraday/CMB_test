@@ -233,5 +233,5 @@ field /= sigma_0_map
 #     nmin.write(repr(Nmin[my_level_i]) + '  ' + repr(my_level_x) + '\n')
 #     nsad.write(repr(Nsad[my_level_i]) + '  ' + repr(my_level_x) + '\n')
 
-cmbplot.flat(x, y, field)
+cmbplot.moll(x, y, field)
 cmbplot.show()
