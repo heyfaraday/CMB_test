@@ -22,7 +22,7 @@ def length(x, y, field, level=0.0):
     from math import fabs, pi
     from distance_1 import s2
 
-    n = field.shape[0] - 1
+    n = field.shape[0]-1
 
     l = 0.0
 
@@ -37,7 +37,7 @@ def length(x, y, field, level=0.0):
             if f[i][j] == 0.0 and (f[i][j + 1] == 0.0 or f[i + 1][j] == 0.0):
                 l += 0.0
 
-            if field[i][j] * field[i][j + 1] < 0.0:
+            if f[i][j] * f[i][j + 1] < 0.0:
 
                 if f[i][j] * f[i + 1][j] < 0.0:
 

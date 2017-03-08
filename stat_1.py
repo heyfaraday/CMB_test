@@ -140,8 +140,11 @@ for global_var in xrange(global_down, global_up):
 
     print global_var, ': start'
 
-    a_coef = np.random.normal(size=(L_max_polynom + 1, L_max_polynom + 1))
-    b_coef = np.random.normal(size=(L_max_polynom + 1, L_max_polynom + 1))
+    # a_coef = np.random.normal(size=(L_max_polynom + 1, L_max_polynom + 1))
+    # b_coef = np.random.normal(size=(L_max_polynom + 1, L_max_polynom + 1))
+
+    a_coef = np.zeros((L_max_field + 1, L_max_field + 1))
+    b_coef = np.zeros((L_max_field + 1, L_max_field + 1))
 
     for m in xrange(0, L_max_field + 1):
         for l in xrange(0, m):
@@ -213,22 +216,28 @@ for global_var in xrange(global_down, global_up):
 
     field /= sigma_0_map
 
-    for my_level_index in xrange(-20, 21):
+    # my_map = cmbplot.flat(x, y, field)
+    # cmbplot.level_plot(my_map, field, x, y, 0.0)
+    # cmbplot.show()
 
-        my_level_x = my_level_index * 0.25
-        my_level_i = my_level_index + 20
+    # print length(x, y, field, 0.0)
 
-        surf.write(repr(area(y, field, my_level_x)) + '   ' + repr(my_level_x) + '   ' + repr(sigma_0) +
-                   '   ' + repr(sigma_1) + '   ' + repr(sigma_2) + '\n')
-        le.write(repr(length(x, y, field, my_level_x)) + '   ' + repr(my_level_x) + '   ' + repr(sigma_0) +
-                 '   ' + repr(sigma_1) + '   ' + repr(sigma_2) + '\n')
-        genus[my_level_i], Nmax[my_level_i], Nmin[my_level_i], Nsad[my_level_i] = \
-             type_points(x, y, field, field_x, field_y, field_xx, field_yy, field_xy, 0, 0, 0,
-                         up_bounds=100, down_bounds=my_level_x)
-
-        points.write(repr(genus[my_level_i]) + '  ' + repr(my_level_x) + '\n')
-        nmax.write(repr(Nmax[my_level_i]) + '  ' + repr(my_level_x) + '\n')
-        nmin.write(repr(Nmin[my_level_i]) + '  ' + repr(my_level_x) + '\n')
-        nsad.write(repr(Nsad[my_level_i]) + '  ' + repr(my_level_x) + '\n')
+    # for my_level_index in xrange(-20, 21):
+    #
+    #     my_level_x = my_level_index * 0.25
+    #     my_level_i = my_level_index + 20
+    #
+    #     surf.write(repr(area(y, field, my_level_x)) + '   ' + repr(my_level_x) + '   ' + repr(sigma_0) +
+    #                '   ' + repr(sigma_1) + '   ' + repr(sigma_2) + '\n')
+    #     le.write(repr(length(x, y, field, my_level_x)) + '   ' + repr(my_level_x) + '   ' + repr(sigma_0) +
+    #              '   ' + repr(sigma_1) + '   ' + repr(sigma_2) + '\n')
+    #     genus[my_level_i], Nmax[my_level_i], Nmin[my_level_i], Nsad[my_level_i] = \
+    #          type_points(x, y, field, field_x, field_y, field_xx, field_yy, field_xy, 0, 0, 0,
+    #                      up_bounds=100, down_bounds=my_level_x)
+    #
+    #     points.write(repr(genus[my_level_i]) + '  ' + repr(my_level_x) + '\n')
+    #     nmax.write(repr(Nmax[my_level_i]) + '  ' + repr(my_level_x) + '\n')
+    #     nmin.write(repr(Nmin[my_level_i]) + '  ' + repr(my_level_x) + '\n')
+    #     nsad.write(repr(Nsad[my_level_i]) + '  ' + repr(my_level_x) + '\n')
 
     print global_var, ': done'
