@@ -7,9 +7,9 @@ print 'preparation: start'
 global_down = 0
 global_up = 1
 
-points = open('stat_1_dir/points.dat', 'w')
-le = open('stat_1_dir/len.dat', 'w')
 surf = open('stat_1_dir/surf.dat', 'w')
+le = open('stat_1_dir/len.dat', 'w')
+points = open('stat_1_dir/points.dat', 'w')
 nmax = open('stat_1_dir/max.dat', 'w')
 nmin = open('stat_1_dir/min.dat', 'w')
 nsad = open('stat_1_dir/sad.dat', 'w')
@@ -19,9 +19,9 @@ Nmax = np.zeros(41)
 Nmin = np.zeros(41)
 Nsad = np.zeros(41)
 
-L_max_field = 10
-L_max_polynom = 10
-L_max_back = 10
+L_max_field = 40
+L_max_polynom = 40
+# L_max_back = 40
 N = 512
 
 
@@ -136,15 +136,19 @@ T = np.zeros(N)
 
 print 'preparation: done'
 
+sigma_0 = 0.0
+sigma_1 = 0.0
+sigma_2 = 0.0
+
 for global_var in xrange(global_down, global_up):
 
     print global_var, ': start'
 
-    # a_coef = np.random.normal(size=(L_max_polynom + 1, L_max_polynom + 1))
-    # b_coef = np.random.normal(size=(L_max_polynom + 1, L_max_polynom + 1))
+    a_coef = np.random.normal(size=(L_max_polynom + 1, L_max_polynom + 1))
+    b_coef = np.random.normal(size=(L_max_polynom + 1, L_max_polynom + 1))
 
-    a_coef = np.zeros((L_max_field + 1, L_max_field + 1))
-    b_coef = np.zeros((L_max_field + 1, L_max_field + 1))
+    # a_coef = np.zeros((L_max_field + 1, L_max_field + 1))
+    # b_coef = np.zeros((L_max_field + 1, L_max_field + 1))
 
     for m in xrange(0, L_max_field + 1):
         for l in xrange(0, m):
@@ -171,23 +175,17 @@ for global_var in xrange(global_down, global_up):
 
         C[l] = C_sum / (2.0 * l + 1.0)
 
-    sigma_0 = 0.0
     for l in xrange(0, L_max_field + 1):
         sigma_0 += (2.0 * l + 1.0) * C[l]
     sigma_0 = sqrt(sigma_0 / 4.0 / pi)
 
-    sigma_1 = 0.0
     for l in xrange(0, L_max_field + 1):
         sigma_1 += l * (l + 1.0) * (2.0 * l + 1.0) * C[l]
     sigma_1 = sqrt(sigma_1 / 4.0 * pi)
 
-    sigma_2 = 0.0
     for l in xrange(0, L_max_field + 1):
         sigma_2 += (l + 2.0) * (l - 1.0) * l * (l + 1.0) * (2.0 * l + 1.0) * C[l]
     sigma_2 = sqrt(sigma_2 / 4.0 * pi)
-
-    func1 = 0.0
-    func2 = 0.0
 
     field = direct_f(N, P_, Fa, Fb, a_coef, b_coef, L_max_field)
 
@@ -216,28 +214,25 @@ for global_var in xrange(global_down, global_up):
 
     field /= sigma_0_map
 
-    # my_map = cmbplot.flat(x, y, field)
-    # cmbplot.level_plot(my_map, field, x, y, 0.0)
-    # cmbplot.show()
+    print global_var, ': stat start'
 
-    # print length(x, y, field, 0.0)
+    for my_level_index in xrange(-20, 21):
 
-    # for my_level_index in xrange(-20, 21):
-    #
-    #     my_level_x = my_level_index * 0.25
-    #     my_level_i = my_level_index + 20
-    #
-    #     surf.write(repr(area(y, field, my_level_x)) + '   ' + repr(my_level_x) + '   ' + repr(sigma_0) +
-    #                '   ' + repr(sigma_1) + '   ' + repr(sigma_2) + '\n')
-    #     le.write(repr(length(x, y, field, my_level_x)) + '   ' + repr(my_level_x) + '   ' + repr(sigma_0) +
-    #              '   ' + repr(sigma_1) + '   ' + repr(sigma_2) + '\n')
-    #     genus[my_level_i], Nmax[my_level_i], Nmin[my_level_i], Nsad[my_level_i] = \
-    #          type_points(x, y, field, field_x, field_y, field_xx, field_yy, field_xy, 0, 0, 0,
-    #                      up_bounds=100, down_bounds=my_level_x)
-    #
-    #     points.write(repr(genus[my_level_i]) + '  ' + repr(my_level_x) + '\n')
-    #     nmax.write(repr(Nmax[my_level_i]) + '  ' + repr(my_level_x) + '\n')
-    #     nmin.write(repr(Nmin[my_level_i]) + '  ' + repr(my_level_x) + '\n')
-    #     nsad.write(repr(Nsad[my_level_i]) + '  ' + repr(my_level_x) + '\n')
+        my_level_x = my_level_index * 0.25
+        my_level_i = my_level_index + 20
 
+        surf.write(repr(area(y, field, my_level_x)) + '   ' + repr(my_level_x) + '   ' + repr(sigma_0) +
+                   '   ' + repr(sigma_1) + '   ' + repr(sigma_2) + '\n')
+        le.write(repr(length(x, y, field, my_level_x)) + '   ' + repr(my_level_x) + '   ' + repr(sigma_0) +
+                 '   ' + repr(sigma_1) + '   ' + repr(sigma_2) + '\n')
+        genus[my_level_i], Nmax[my_level_i], Nmin[my_level_i], Nsad[my_level_i] = \
+             type_points(x, y, field, field_x, field_y, field_xx, field_yy, field_xy, 0, 0, 0,
+                         up_bounds=100, down_bounds=my_level_x)
+
+        points.write(repr(genus[my_level_i]) + '  ' + repr(my_level_x) + '\n')
+        nmax.write(repr(Nmax[my_level_i]) + '  ' + repr(my_level_x) + '\n')
+        nmin.write(repr(Nmin[my_level_i]) + '  ' + repr(my_level_x) + '\n')
+        nsad.write(repr(Nsad[my_level_i]) + '  ' + repr(my_level_x) + '\n')
+
+    print global_var, ': stat end'
     print global_var, ': done'

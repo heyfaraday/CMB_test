@@ -7,9 +7,9 @@ print 'preparation: start'
 global_down = 0
 global_up = 1
 
-points = open('stat_2_dir/points.dat', 'w')
-le = open('stat_2_dir/len.dat', 'w')
 surf = open('stat_2_dir/surf.dat', 'w')
+le = open('stat_2_dir/len.dat', 'w')
+points = open('stat_2_dir/points.dat', 'w')
 nmax = open('stat_2_dir/max.dat', 'w')
 nmin = open('stat_2_dir/min.dat', 'w')
 nsad = open('stat_2_dir/sad.dat', 'w')
@@ -19,10 +19,10 @@ Nmax = np.zeros(41)
 Nmin = np.zeros(41)
 Nsad = np.zeros(41)
 
-L_max_field = 50
-L_max_polynom = 50
-L_max_back = 50
-N = 512
+L_max_field = 40
+L_max_polynom = 256
+L_max_back = 256-1
+N = 256
 
 
 def coef_1(in_l, in_m):
@@ -134,6 +134,10 @@ Fa = np.zeros((N / 2 + 1, N))
 Fb = np.zeros((N / 2 + 1, N))
 T = np.zeros(N)
 
+sigma_0 = 0.0
+sigma_1 = 0.0
+sigma_2 = 0.0
+
 print 'preparation: done'
 
 for global_var in xrange(global_down, global_up):
@@ -142,6 +146,9 @@ for global_var in xrange(global_down, global_up):
 
     a_coef = np.random.normal(size=(L_max_polynom + 1, L_max_polynom + 1))
     b_coef = np.random.normal(size=(L_max_polynom + 1, L_max_polynom + 1))
+
+    # a_coef = np.zeros((L_max_field + 1, L_max_field + 1))
+    # b_coef = np.zeros((L_max_field + 1, L_max_field + 1))
 
     back_F = np.zeros((N / 2 + 1, N), dtype=complex)
     back_F_a = np.zeros((N / 2 + 1, N))
@@ -172,23 +179,17 @@ for global_var in xrange(global_down, global_up):
 
         C[l] = C_sum / (2.0 * l + 1.0)
 
-    sigma_0 = 0.0
     for l in xrange(0, L_max_field + 1):
         sigma_0 += (2.0 * l + 1.0) * C[l]
     sigma_0 = sqrt(sigma_0 / 4.0 / pi)
 
-    sigma_1 = 0.0
     for l in xrange(0, L_max_field + 1):
         sigma_1 += l * (l + 1.0) * (2.0 * l + 1.0) * C[l]
     sigma_1 = sqrt(sigma_1 / 4.0 * pi)
 
-    sigma_2 = 0.0
     for l in xrange(0, L_max_field + 1):
         sigma_2 += (l + 2.0) * (l - 1.0) * l * (l + 1.0) * (2.0 * l + 1.0) * C[l]
     sigma_2 = sqrt(sigma_2 / 4.0 * pi)
-
-    func1 = 0.0
-    func2 = 0.0
 
     field = direct_f(N, P_, Fa, Fb, a_coef, b_coef, L_max_field)
 
@@ -223,21 +224,23 @@ for global_var in xrange(global_down, global_up):
 
     back_a_coef, back_b_coef = inverse_f(N, P, P_, back_F, back_F_a, back_F_b, L_max_back)
 
-    P = direct_f(N, P_, Fa, Fb, back_a_coef, back_b_coef, L_max_field)
+    P = direct_f(N, P_, Fa, Fb, back_a_coef, back_b_coef, L_max_back)
 
-    P_x = direct_f(N, F_x, Fa, Fb, back_a_coef, back_b_coef, L_max_field, True)
+    P_x = direct_f(N, F_x, Fa, Fb, back_a_coef, back_b_coef, L_max_back, True)
 
-    P_y = direct_f(N, F_y, Fa, Fb, back_a_coef, back_b_coef, L_max_field)
+    P_y = direct_f(N, F_y, Fa, Fb, back_a_coef, back_b_coef, L_max_back)
 
-    P_xx = direct_f(N, F_xx_1 + F_xx_2, Fa, Fb, back_a_coef, back_b_coef, L_max_field)
+    P_xx = direct_f(N, F_xx_1 + F_xx_2, Fa, Fb, back_a_coef, back_b_coef, L_max_back)
 
-    P_yy = direct_f(N, F_yy, Fa, Fb, back_a_coef, back_b_coef, L_max_field)
+    P_yy = direct_f(N, F_yy, Fa, Fb, back_a_coef, back_b_coef, L_max_back)
 
-    P_xy = direct_f(N, F_xy, Fa, Fb, back_a_coef, back_b_coef, L_max_field, True)
+    P_xy = direct_f(N, F_xy, Fa, Fb, back_a_coef, back_b_coef, L_max_back, True)
 
     whitelist = null_points(x, y, P, U, Q)
 
-    for my_level_index in xrange(-20, 21):
+    print global_var, ': stat start'
+
+    for my_level_index in xrange(0, 21):
 
         my_level_x = my_level_index * 0.25
         my_level_i = my_level_index + 20
@@ -255,4 +258,5 @@ for global_var in xrange(global_down, global_up):
         nmin.write(repr(Nmin[my_level_i]) + '  ' + repr(my_level_x) + '\n')
         nsad.write(repr(Nsad[my_level_i]) + '  ' + repr(my_level_x) + '\n')
 
+    print global_var, ': stat end'
     print global_var, ': done'
