@@ -533,7 +533,6 @@ def type_points(x, y, f, fx, fy, fxx, fyy, fxy, sigma_0, sigma_1, sigma_2, my_fi
 
 
 def null_points(x, y, f, fx, fy, my_file=False, my_cmbmap=False):
-
     from numpy import zeros
     from math import fabs, pi
     from lib.distance import cross
@@ -1039,7 +1038,74 @@ def singular_points(x, y, q, u, qx, qy, ux, uy, my_file=False, my_cmbmap=False):
                         point(my_cmbmap, phi_precision, theta_precision, ms, my_type)
 
                     if my_file:
-                        my_file.write(repr(phi_precision) + '    ' + repr(theta_precision) + '   ' +
+                        my_file.write(repr(i) + '    ' + repr(j) + '    ' +
+                                      repr(phi_precision) + '    ' + repr(theta_precision) + '   ' +
                                       repr(cond_answ) + '    ' + repr(qx_precision) + '    ' +
                                       repr(qy_precision) + '    ' + repr(ux_precision) + '    ' +
                                       repr(uy_precision) + '\n')
+
+
+def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_plot=0, type_compare=False):
+    # gap = 0
+    # number of points for each type
+    # type_compare
+    from numpy import zeros, size
+    from math import pi
+
+    z_1 = zeros((n, n / 2))
+    z_2 = zeros((n, n / 2))
+
+    n_points_1 = int(size(file1) / 9.0)
+    n_points_2 = int(size(file2) / 9.0)
+
+    x = zeros((n + 1, n / 2 + 1))
+    y = zeros((n + 1, n / 2 + 1))
+
+    print n_points_1
+
+    for i in xrange(0, n + 1):
+        for j in xrange(0, n / 2 + 1):
+            x[i][j] = (2.0 * i - n) / n * pi
+            y[i][j] = 2.0 * j / n * pi - pi / 2.0
+
+    for i in xrange(0, n_points_1):
+        z_1[int(file1[i][0]), int(file1[i][1])] = 1
+
+    for i in xrange(0, n_points_2):
+        z_2[int(file2[i][0]), int(file2[i][1])] = 1
+
+    z = z_1 * z_2
+
+    for i in xrange(0, n_points_1):
+
+        if z[int(file1[i][0]), int(file1[i][1])] == 1:
+
+            if file1[i][4] == 0:
+                my_type = 'o'
+                my_color = 'green'
+                ms = 1
+
+            elif file1[i][4] == 1:
+                my_type = 'o'
+                my_color = 'blue'
+                ms = 1
+
+            elif file1[i][4] == 2:
+                my_type = 'o'
+                my_color = 'red'
+                ms = 1
+
+            if my_cmbmap:
+                from lib.cmbplot import point
+
+                if number_plot == 0:
+                    point(my_cmbmap, file1[i][2], file1[i][3], ms, my_type, my_color)
+                elif number_plot != 0:
+                    point(my_cmbmap, file1[i][2], file1[i][3], ms, my_type, my_color)
+                    number_plot -= 1
+                    if number_plot == 0:
+                        break
+
+            if file_out:
+                file_out.write(repr(file1[i][0]) + '    ' + repr(file1[i][1]) + '    ' +
+                              repr(file1[i][4]) + '    ' + '\n')
