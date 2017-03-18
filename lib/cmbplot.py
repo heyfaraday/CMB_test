@@ -40,7 +40,7 @@ def flat(x, y, field):
     return cmbmap
 
 
-def point(in_cmbmap, phi, theta, size, marker, color):
+def point(in_cmbmap, phi, theta, size, marker, color='black'):
     from math import pi
 
     rad = 180.0 / pi
