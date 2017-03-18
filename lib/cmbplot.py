@@ -40,13 +40,13 @@ def flat(x, y, field):
     return cmbmap
 
 
-def point(in_cmbmap, phi, theta, size, marker):
+def point(in_cmbmap, phi, theta, size, marker, color):
     from math import pi
 
     rad = 180.0 / pi
 
     lons, lats = in_cmbmap(rad * phi, rad * theta)
-    in_cmbmap.scatter(lons, lats, size, marker=marker)
+    in_cmbmap.scatter(lons, lats, size, marker=marker, color=color)
 
 
 def contour(in_cmbmap, field, x, y, number):

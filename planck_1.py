@@ -1,7 +1,7 @@
 from math import sqrt, pi, sin, cos
 import numpy as np
 from lib.fourier import direct_f
-from lib.minkowski_1 import length, area, type_points
+from lib.minkowski import length, area, type_points
 from lib import cmbplot
 from lib import healpy_format
 

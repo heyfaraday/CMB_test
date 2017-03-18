@@ -4,7 +4,7 @@ from lib import cmbplot
 
 N = 1024
 
-file_map = genfromtxt('planck_2_dir/file_map.dat')
+file_map = genfromtxt('planck_2_dir/file_map_U.dat')
 
 file_normal = zeros((N + 1, N / 2 + 1))
 
@@ -21,6 +21,6 @@ for i in xrange(0, (N + 1) * (N/2 + 1)):
 
 cmb_map = cmbplot.moll(x, y, file_normal)
 
-# null_points(x, y, field, field_x, field_y, my_cmbmap=cmb_map)
+cmbplot.level_plot(cmb_map, file_normal, x, y, 0.0)
 
 cmbplot.show()

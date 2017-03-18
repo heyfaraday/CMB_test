@@ -1,7 +1,7 @@
 from math import sqrt, pi, sin, cos
 import numpy as np
 from lib.fourier import direct_f, inverse_f
-from lib.minkowski_1 import area, length, type_points, null_points
+from lib.minkowski import area, length, type_points, null_points
 
 print 'preparation: start'
 global_down = 0

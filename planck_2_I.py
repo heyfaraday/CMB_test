@@ -1,7 +1,7 @@
 from math import sqrt, pi, sin, cos
 import numpy as np
 from lib.fourier import direct_f, direct_f_int
-from lib.minkowski_1 import length, area, type_points, null_points
+from lib.minkowski import length, area, type_points, null_points
 from lib import cmbplot
 from lib import healpy_format
 
@@ -10,7 +10,9 @@ L_max_polynom = 512
 L_max_back = 512
 N = 1024
 
-file_map = open('planck_2_dir/file_map.dat', 'w')
+file_map_Q = open('planck_2_dir/file_map_Q_512.dat', 'w')
+file_map_Qx = open('planck_2_dir/file_map_Qx_512.dat', 'w')
+file_map_Qy = open('planck_2_dir/file_map_Qy_512.dat', 'w')
 
 genus = np.zeros(41)
 Nmax = np.zeros(41)
@@ -37,7 +39,7 @@ Fa = np.zeros((N / 2 + 1, N))
 Fb = np.zeros((N / 2 + 1, N))
 T = np.zeros(N)
 
-a_from_file = healpy_format.healpy_file('planck_2_dir/planck_2_I_norm.dat', L_max_field)
+a_from_file = healpy_format.healpy_file('planck_2_dir/planck_2_Q_norm_512.dat', L_max_field)
 
 a_coef = np.real(a_from_file)
 b_coef = np.imag(a_from_file)
@@ -82,8 +84,13 @@ for l in xrange(0, L_max_field + 1):
     sigma_2 += (l + 2.0) * (l - 1.0) * l * (l + 1.0) * (2.0 * l + 1.0) * C[l]
 sigma_2 = sqrt(sigma_2 / 4.0 * pi)
 
+print 'field'
 field = direct_f_int(N, Fa, Fb, a_coef, b_coef, L_max_field, sign='0')
+
+print 'field_x'
 field_x = direct_f_int(N, Fa, Fb, a_coef, b_coef, L_max_field, sign='x', diff=True)
+
+print 'field_y'
 field_y = direct_f_int(N, Fa, Fb, a_coef, b_coef, L_max_field, sign='y')
 
 a = 0.0
@@ -103,4 +110,12 @@ field /= sigma_0_map
 
 for i in xrange(0, N + 1):
     for j in xrange(0, N / 2 + 1):
-        file_map.write(repr(field[i][j]) + '    ' + repr(i) + '    ' + repr(j) + '\n')
+        file_map_Q.write(repr(field[i][j]) + '    ' + repr(i) + '    ' + repr(j) + '\n')
+
+for i in xrange(0, N + 1):
+    for j in xrange(0, N / 2 + 1):
+        file_map_Qx.write(repr(field_x[i][j]) + '    ' + repr(i) + '    ' + repr(j) + '\n')
+
+for i in xrange(0, N + 1):
+    for j in xrange(0, N / 2 + 1):
+        file_map_Qy.write(repr(field_y[i][j]) + '    ' + repr(i) + '    ' + repr(j) + '\n')

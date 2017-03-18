@@ -1,7 +1,7 @@
 import numpy as np
 from math import sqrt, pi, sin, cos
 
-from lib import minkowski_1
+from lib import minkowski
 
 L_max_field = 7
 L_max_polynom = 7
@@ -311,7 +311,7 @@ sigma_0_map = sqrt(a / na)
 
 field /= sigma_0_map
 
-print minkowski_1.area(y, field)
-print minkowski_1.length(x, y, field)
+print minkowski.area(y, field)
+print minkowski.length(x, y, field)
 
 print field

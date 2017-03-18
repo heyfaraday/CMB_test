@@ -3,7 +3,7 @@ from math import sqrt, pi, sin, cos
 import numpy as np
 
 from lib import cmbplot
-from lib import minkowski_1
+from lib import minkowski
 
 L_max_field = 16
 L_max_polynom = 16
@@ -315,11 +315,11 @@ sigma_0_map = sqrt(a / na)
 
 field /= sigma_0_map
 
-print minkowski_1.area(y, field)
-print minkowski_1.length(x, y, field)
+print minkowski.area(y, field)
+print minkowski.length(x, y, field)
 
 my_map = cmbplot.ortho(x, y, field)
-minkowski_1.type_points(x, y, field, field_x, field_y, field_xx, field_yy, field_xy, 0.0, 0.0, 0.0, my_cmbmap=my_map)
+minkowski.type_points(x, y, field, field_x, field_y, field_xx, field_yy, field_xy, 0.0, 0.0, 0.0, my_cmbmap=my_map)
 cmbplot.level_plot(my_map, field_x, x, y, 0.0)
 cmbplot.level_plot(my_map, field_y, x, y, 0.0)
 cmbplot.show()
