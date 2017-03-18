@@ -4,15 +4,15 @@ from lib import minkowski
 
 N = 1024
 
-file_map_Q = genfromtxt('planck_2_dir/file_map_Q_512.dat')
-file_map_Qx = genfromtxt('planck_2_dir/file_map_Qx_512.dat')
-file_map_Qy = genfromtxt('planck_2_dir/file_map_Qy_512.dat')
+file_map_Q = genfromtxt('planck_2_dir/file_map_Q.dat')
+file_map_Qx = genfromtxt('planck_2_dir/file_map_Qx.dat')
+file_map_Qy = genfromtxt('planck_2_dir/file_map_Qy.dat')
 
-file_map_U = genfromtxt('planck_2_dir/file_map_U_512.dat')
-file_map_Ux = genfromtxt('planck_2_dir/file_map_Ux_512.dat')
-file_map_Uy = genfromtxt('planck_2_dir/file_map_Uy_512.dat')
+file_map_U = genfromtxt('planck_2_dir/file_map_U.dat')
+file_map_Ux = genfromtxt('planck_2_dir/file_map_Ux.dat')
+file_map_Uy = genfromtxt('planck_2_dir/file_map_Uy.dat')
 
-file_map_points = open('planck_2_dir/file_map_points_512.dat', 'w')
+file_map_points = open('planck_2_dir/file_map_points.dat', 'w')
 
 file_normal_Q = zeros((N + 1, N / 2 + 1))
 file_normal_Qx = zeros((N + 1, N / 2 + 1))
