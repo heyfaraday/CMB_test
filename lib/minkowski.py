@@ -768,7 +768,7 @@ def null_points(x, y, f, fx, fy, my_file=False, my_cmbmap=False):
     return whitelist
 
 
-def singular_points(x, y, q, u, qx, qy, ux, uy, my_file=False, my_cmbmap=False):
+def singular_points(x, y, q, u, qx, qy, ux, uy, my_file=False, my_cmbmap=False, print_num=False):
     from numpy import zeros
     from math import fabs, pi
     from lib.distance import s2, cross
@@ -1044,8 +1044,13 @@ def singular_points(x, y, q, u, qx, qy, ux, uy, my_file=False, my_cmbmap=False):
                                       repr(qy_precision) + '    ' + repr(ux_precision) + '    ' +
                                       repr(uy_precision) + '\n')
 
+                    if print_num:
+                        print 'saddles:', n_saddle
+                        print 'beaks:', n_beak
+                        print 'comets', n_comet
 
-def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_plot=0, type_compare=False):
+
+def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_plot=0, type_compare=False, pix=False):
     # gap = 0
     # number of points for each type
     # type_compare
@@ -1060,8 +1065,6 @@ def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_p
 
     x = zeros((n + 1, n / 2 + 1))
     y = zeros((n + 1, n / 2 + 1))
-
-    print n_points_1
 
     for i in xrange(0, n + 1):
         for j in xrange(0, n / 2 + 1):
@@ -1083,17 +1086,17 @@ def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_p
             if file1[i][4] == 0:
                 my_type = 'o'
                 my_color = 'green'
-                ms = 1
+                ms = 5
 
             elif file1[i][4] == 1:
                 my_type = 'o'
                 my_color = 'blue'
-                ms = 1
+                ms = 5
 
             elif file1[i][4] == 2:
                 my_type = 'o'
                 my_color = 'red'
-                ms = 1
+                ms = 5
 
             if my_cmbmap:
                 from lib.cmbplot import point
@@ -1102,6 +1105,11 @@ def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_p
                     point(my_cmbmap, file1[i][2], file1[i][3], ms, my_type, my_color)
                 elif number_plot != 0:
                     point(my_cmbmap, file1[i][2], file1[i][3], ms, my_type, my_color)
+
+                    if pix:
+                        point(my_cmbmap, x[int(file1[i][0])][int(file1[i][1])], y[int(file1[i][0])][int(file1[i][1])],
+                              10, '+')
+
                     number_plot -= 1
                     if number_plot == 0:
                         break

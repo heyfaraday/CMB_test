@@ -108,3 +108,43 @@ def correlations_from_alm(a, b, lmax):
     sigma_2 = sqrt(sigma_2 / 4.0 / pi)
 
     return sigma_0, sigma_1, sigma_2
+
+
+def plot_al_m(alm_normal_format, l_max):
+    from numpy import linspace, real
+    from pylab import plot, show
+
+    i = linspace(0, l_max, l_max)
+    plot(i, real(alm_normal_format[1]))
+
+    show()
+
+
+def print_al_m_c(alm_normal_format, l_max):
+    from numpy import linspace, real
+    from pylab import plot, show
+
+    i = linspace(0, l_max, l_max)
+    plot(i, real(alm_normal_format[1]) * real(alm_normal_format[1]) * i * (i + 1))
+
+    show()
+
+
+def plot_bl_m(alm_normal_format, l_max):
+    from numpy import linspace, imag
+    from pylab import plot, show
+
+    i = linspace(0, l_max, l_max)
+    plot(i, imag(alm_normal_format[1]))
+
+    show()
+
+
+def print_bl_m_c(alm_normal_format, l_max):
+    from numpy import linspace, imag
+    from pylab import plot, show
+
+    i = linspace(0, l_max, l_max)
+    plot(i, imag(alm_normal_format[1]) * imag(alm_normal_format[1]) * i * (i + 1))
+
+    show()
