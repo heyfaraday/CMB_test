@@ -2,9 +2,9 @@ from numpy import genfromtxt, zeros
 from math import pi
 from lib import cmbplot
 
-N = 1024
+N = 4096
 
-file_map = genfromtxt('planck_2_dir/file_map_U.dat')
+file_map = genfromtxt('planck_2_dir/file_map_U_64_4096.dat')
 
 file_normal = zeros((N + 1, N / 2 + 1))
 
@@ -21,6 +21,6 @@ for i in xrange(0, (N + 1) * (N/2 + 1)):
 
 cmb_map = cmbplot.moll(x, y, file_normal)
 
-cmbplot.level_plot(cmb_map, file_normal, x, y, 0.0)
+# cmbplot.level_plot(cmb_map, file_normal, x, y, 0.0)
 
 cmbplot.show()

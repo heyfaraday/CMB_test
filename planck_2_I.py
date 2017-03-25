@@ -27,8 +27,6 @@ for i in xrange(0, N + 1):
         x[i][j] = (2.0 * i - N) / N * pi
         y[i][j] = 2.0 * j / N * pi - pi / 2.0
 
-Fa = np.zeros((N / 2 + 1, N))
-Fb = np.zeros((N / 2 + 1, N))
 T = np.zeros(N)
 
 a_from_file = healpy_format.healpy_file('planck_2_dir/planck_2_U_norm_64.dat', L_max_field)
@@ -77,13 +75,13 @@ for l in xrange(0, L_max_field + 1):
 sigma_2 = sqrt(sigma_2 / 4.0 * pi)
 
 print 'field'
-field = direct_f_int(N, Fa, Fb, a_coef, b_coef, L_max_field, sign='0')
+field = direct_f_int(N, a_coef, b_coef, L_max_field, sign='0')
 
 print 'field_x'
-field_x = direct_f_int(N, Fa, Fb, a_coef, b_coef, L_max_field, sign='x', diff=True)
+field_x = direct_f_int(N, a_coef, b_coef, L_max_field, sign='x', diff=True)
 
 print 'field_y'
-field_y = direct_f_int(N, Fa, Fb, a_coef, b_coef, L_max_field, sign='y')
+field_y = direct_f_int(N, a_coef, b_coef, L_max_field, sign='y')
 
 a = 0.0
 na = 0.0
