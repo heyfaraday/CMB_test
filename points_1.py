@@ -2,17 +2,17 @@ from numpy import genfromtxt, zeros
 from math import pi
 from lib import minkowski
 
-N = 1024
+N = 2048
 
-file_map_Q = genfromtxt('planck_2_dir/file_map_Q.dat')
-file_map_Qx = genfromtxt('planck_2_dir/file_map_Qx.dat')
-file_map_Qy = genfromtxt('planck_2_dir/file_map_Qy.dat')
+file_map_Q = genfromtxt('planck_2_dir/file_map_Q_64_2048.dat')
+file_map_Qx = genfromtxt('planck_2_dir/file_map_Qx_64_2048.dat')
+file_map_Qy = genfromtxt('planck_2_dir/file_map_Qy_64_2048.dat')
 
-file_map_U = genfromtxt('planck_2_dir/file_map_U.dat')
-file_map_Ux = genfromtxt('planck_2_dir/file_map_Ux.dat')
-file_map_Uy = genfromtxt('planck_2_dir/file_map_Uy.dat')
+file_map_U = genfromtxt('planck_2_dir/file_map_U_64_2048.dat')
+file_map_Ux = genfromtxt('planck_2_dir/file_map_Ux_64_2048.dat')
+file_map_Uy = genfromtxt('planck_2_dir/file_map_Uy_64_2048.dat')
 
-file_map_points = open('planck_2_dir/file_map_points.dat', 'w')
+file_map_points = open('planck_2_dir/file_map_points_64.dat', 'w')
 
 file_normal_Q = zeros((N + 1, N / 2 + 1))
 file_normal_Qx = zeros((N + 1, N / 2 + 1))
@@ -42,4 +42,4 @@ for i in xrange(0, (N + 1) * (N/2 + 1)):
 # cmb_map = cmbplot.moll(x, y, file_normal_Q*file_normal_Q + file_normal_U*file_normal_U)
 
 minkowski.singular_points(x, y, file_normal_Q, file_normal_U, file_normal_Qx, file_normal_Qy, file_normal_Ux,
-                          file_normal_Uy, my_file=file_map_points)
+                          file_normal_Uy, my_file=file_map_points, print_num=True)

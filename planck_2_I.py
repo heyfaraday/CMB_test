@@ -5,27 +5,19 @@ from lib.minkowski import length, area, type_points, null_points
 from lib import cmbplot
 from lib import healpy_format
 
-L_max_field = 512
-L_max_polynom = 512
-L_max_back = 512
-N = 1024
+L_max_field = 64
+L_max_polynom = 64
+L_max_back = 64
+N = 4096
 
-file_map_Q = open('planck_2_dir/file_map_Q_512.dat', 'w')
-file_map_Qx = open('planck_2_dir/file_map_Qx_512.dat', 'w')
-file_map_Qy = open('planck_2_dir/file_map_Qy_512.dat', 'w')
+file_map_Q = open('planck_2_dir/file_map_U_64_4096.dat', 'w')
+file_map_Qx = open('planck_2_dir/file_map_Ux_64_4096.dat', 'w')
+file_map_Qy = open('planck_2_dir/file_map_Uy_64_4096.dat', 'w')
 
 genus = np.zeros(41)
 Nmax = np.zeros(41)
 Nmin = np.zeros(41)
 Nsad = np.zeros(41)
-
-
-def coef_1(in_l, in_m):
-    if in_l != 0:
-        return sqrt((in_l - in_m) * (2.0 * in_l + 1.0)
-                    / ((in_l + in_m) * (2.0 * in_l - 1.0)))
-    if in_l == 0:
-        return 0.0
 
 x = np.zeros((N + 1, N / 2 + 1))
 y = np.zeros((N + 1, N / 2 + 1))
@@ -39,7 +31,7 @@ Fa = np.zeros((N / 2 + 1, N))
 Fb = np.zeros((N / 2 + 1, N))
 T = np.zeros(N)
 
-a_from_file = healpy_format.healpy_file('planck_2_dir/planck_2_Q_norm_512.dat', L_max_field)
+a_from_file = healpy_format.healpy_file('planck_2_dir/planck_2_U_norm_64.dat', L_max_field)
 
 a_coef = np.real(a_from_file)
 b_coef = np.imag(a_from_file)
