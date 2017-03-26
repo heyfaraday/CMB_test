@@ -373,6 +373,12 @@ def direct_f_int(size, cos_coef, sin_coef, l_max_dir, sign, diff=False):
                 p_ = legendre_x_discrete(j, size, l_max_dir)
             elif sign[0] == 'y':
                 p_ = legendre_y_discrete(j, size, l_max_dir)
+            elif sign[0] == 'xx':
+                p_ = legendre_xx_discrete(j, size, l_max_dir)
+            elif sign[0] == 'yy':
+                p_ = legendre_yy_discrete(j, size, l_max_dir)
+            elif sign[0] == 'xy':
+                p_ = legendre_xy_discrete(j, size, l_max_dir)
             else:
                 print 'Not valid'
 
@@ -402,6 +408,12 @@ def direct_f_int(size, cos_coef, sin_coef, l_max_dir, sign, diff=False):
                 p_ = legendre_x_discrete(j, size, l_max_dir)
             elif sign[0] == 'y':
                 p_ = legendre_y_discrete(j, size, l_max_dir)
+            elif sign[0] == 'xx':
+                p_ = legendre_xx_discrete(j, size, l_max_dir)
+            elif sign[0] == 'yy':
+                p_ = legendre_yy_discrete(j, size, l_max_dir)
+            elif sign[0] == 'xy':
+                p_ = legendre_xy_discrete(j, size, l_max_dir)
             else:
                 print 'Not valid'
 
@@ -472,11 +484,17 @@ def direct_point_int(phi, theta, cos_coef, sin_coef, l_max_dir, sign, diff=False
     if diff:
 
         if sign[0] == '0':
-            p_ = legendre(theta, l_max_dir)
+            p_ = legendre_discrete(j, size, l_max_dir)
         elif sign[0] == 'x':
-            p_ = legendre_x(theta, l_max_dir)
+            p_ = legendre_x_discrete(j, size, l_max_dir)
         elif sign[0] == 'y':
-            p_ = legendre_y(theta, l_max_dir)
+            p_ = legendre_y_discrete(j, size, l_max_dir)
+        elif sign[0] == 'xx':
+            p_ = legendre_xx_discrete(j, size, l_max_dir)
+        elif sign[0] == 'yy':
+            p_ = legendre_yy_discrete(j, size, l_max_dir)
+        elif sign[0] == 'xy':
+            p_ = legendre_xy_discrete(j, size, l_max_dir)
         else:
             print 'Not valid'
 
@@ -488,11 +506,17 @@ def direct_point_int(phi, theta, cos_coef, sin_coef, l_max_dir, sign, diff=False
     else:
 
         if sign[0] == '0':
-            p_ = legendre(theta, l_max_dir)
+            p_ = legendre_discrete(j, size, l_max_dir)
         elif sign[0] == 'x':
-            p_ = legendre_x(theta, l_max_dir)
+            p_ = legendre_x_discrete(j, size, l_max_dir)
         elif sign[0] == 'y':
-            p_ = legendre_y(theta, l_max_dir)
+            p_ = legendre_y_discrete(j, size, l_max_dir)
+        elif sign[0] == 'xx':
+            p_ = legendre_xx_discrete(j, size, l_max_dir)
+        elif sign[0] == 'yy':
+            p_ = legendre_yy_discrete(j, size, l_max_dir)
+        elif sign[0] == 'xy':
+            p_ = legendre_xy_discrete(j, size, l_max_dir)
         else:
             print 'Not valid'
 

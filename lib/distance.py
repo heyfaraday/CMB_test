@@ -24,3 +24,39 @@ def cross(phi1a, theta1a, phi1b, theta1b, phi2a, theta2a, phi2b, theta2b):
     mod = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2])
 
     return atan(a[1] / a[0]), asin(a[2] / mod)
+
+
+def restore_value_11(phi, theta, f, x, y, i, j):
+
+    return f[i][j] + (f[i + 1][j] - f[i][j]) * s2(x[i][j], phi, theta, theta) / \
+                        s2(x[i][j], x[i + 1][j], theta, theta) + (f[i][j + 1] - f[i][j]) * \
+                        s2(phi, phi, y[i][j], theta) / s2(phi, phi, y[i][j], y[i][j + 1])
+
+
+def restore_value_12(phi, theta, f, x, y, i, j):
+
+    return f[i][j + 1] + (f[i + 1][j + 1] - f[i][j + 1]) * s2(x[i][j + 1], phi, theta, theta) / \
+                        s2(x[i][j + 1], x[i + 1][j + 1], theta, theta) + (f[i][j] - f[i][j + 1]) * \
+                        s2(phi, phi, y[i][j + 1], theta) / s2(phi, phi, y[i][j + 1], y[i][j])
+
+
+def restore_value_21(phi, theta, f, x, y, i, j):
+
+    return f[i + 1][j] + (f[i][j] - f[i + 1][j]) * s2(x[i + 1][j], phi, theta, theta) / \
+                        s2(x[i + 1][j], x[i][j], theta, theta) + (f[i + 1][j + 1] - f[i + 1][j]) * \
+                        s2(phi, phi, y[i + 1][j], theta) / s2(phi, phi, y[i + 1][j], y[i + 1][j + 1])
+
+
+def restore_value_22(phi, theta, f, x, y, i, j):
+
+    return f[i + 1][j + 1] + (f[i][j + 1] - f[i + 1][j + 1]) * s2(x[i + 1][j + 1], phi, theta, theta) / \
+                        s2(x[i + 1][j + 1], x[i][j + 1], theta, theta) + (f[i + 1][j] - f[i + 1][j + 1]) * \
+                        s2(phi, phi, y[i + 1][j + 1], theta) / s2(phi, phi, y[i + 1][j + 1], y[i + 1][j])
+
+
+def restore_value_3(phi, theta, f, x, y, i, j):
+
+    return f[i][j] + ((f[i + 1][j] - f[i][j]) + (f[i + 1][j + 1] - f[i][j + 1])) * s2(x[i][j], phi, theta, theta) / \
+                        s2(x[i][j], x[i + 1][j], theta, theta) + ((f[i][j + 1] - f[i][j]) +
+                        (f[i + 1][j + 1] - f[i + 1][j])) * s2(phi, phi, y[i][j], theta) / \
+                        s2(phi, phi, y[i][j], y[i][j + 1])

@@ -1050,18 +1050,13 @@ def singular_points(x, y, q, u, qx, qy, ux, uy, my_file=False, my_cmbmap=False, 
                         print 'comets', n_comet
 
 
-def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_plot=0, type_compare=False, pix=False):
-    # gap = 0
-    # number of points for each type
-    # type_compare
+def points_comparison_single(file1, n, file_out=False, my_cmbmap=False, number_plot=0, pix=False):
     from numpy import zeros, size
     from math import pi
 
-    z_1 = zeros((n, n / 2))
-    z_2 = zeros((n, n / 2))
+    z = zeros((n, n / 2))
 
-    n_points_1 = int(size(file1) / 9.0)
-    n_points_2 = int(size(file2) / 9.0)
+    n_points = int(size(file1) / 9.0)
 
     x = zeros((n + 1, n / 2 + 1))
     y = zeros((n + 1, n / 2 + 1))
@@ -1071,15 +1066,10 @@ def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_p
             x[i][j] = (2.0 * i - n) / n * pi
             y[i][j] = 2.0 * j / n * pi - pi / 2.0
 
-    for i in xrange(0, n_points_1):
-        z_1[int(file1[i][0]), int(file1[i][1])] = 1
+    for i in xrange(0, n_points):
+        z[int(file1[i][0]), int(file1[i][1])] = 1
 
-    for i in xrange(0, n_points_2):
-        z_2[int(file2[i][0]), int(file2[i][1])] = 1
-
-    z = z_1 * z_2
-
-    for i in xrange(0, n_points_1):
+    for i in xrange(0, n_points):
 
         if z[int(file1[i][0]), int(file1[i][1])] == 1:
 
@@ -1116,4 +1106,183 @@ def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_p
 
             if file_out:
                 file_out.write(repr(file1[i][0]) + '    ' + repr(file1[i][1]) + '    ' +
+                               repr(file1[i][4]) + '    ' + '\n')
+
+
+def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_plot=0, type_compare=False, pix=False):
+    # gap = 0
+    # number of points for each type
+    # type_compare
+    from numpy import zeros, size
+    from math import pi
+
+    z_1 = zeros((n, n / 2))
+    z_2 = zeros((n, n / 2))
+
+    n_points_1 = int(size(file1) / 9.0)
+    n_points_2 = int(size(file2) / 9.0)
+
+    x = zeros((n + 1, n / 2 + 1))
+    y = zeros((n + 1, n / 2 + 1))
+
+    for i in xrange(0, n + 1):
+        for j in xrange(0, n / 2 + 1):
+            x[i][j] = (2.0 * i - n) / n * pi
+            y[i][j] = 2.0 * j / n * pi - pi / 2.0
+
+    for i in xrange(0, n_points_1):
+        z_1[int(file1[i][0]), int(file1[i][1])] = 1
+
+    for i in xrange(0, n_points_2):
+        z_2[int(file2[i][0]), int(file2[i][1])] = 1
+
+    z = z_1 * z_2
+
+    for i in xrange(0, n_points_1):
+
+        flag = 0
+        if type_compare:
+            if file1[i][4] == file2[i][4] == 1 and z[int(file1[i][0]), int(file1[i][1])]:
+                flag = 1
+        else:
+            if z[int(file1[i][0]), int(file1[i][1])]:
+                flag = 1
+
+        if flag:
+
+            if file1[i][4] == 0:
+                my_type = 'o'
+                my_color = 'green'
+                ms = 5
+
+            elif file1[i][4] == 1:
+                my_type = 'o'
+                my_color = 'blue'
+                ms = 5
+
+            elif file1[i][4] == 2:
+                my_type = 'o'
+                my_color = 'red'
+                ms = 5
+
+            if my_cmbmap:
+                from lib.cmbplot import point
+
+                if number_plot == 0:
+                    point(my_cmbmap, file1[i][2], file1[i][3], ms, my_type, my_color)
+                elif number_plot != 0:
+                    point(my_cmbmap, file1[i][2], file1[i][3], ms, my_type, my_color)
+
+                    if pix:
+                        point(my_cmbmap, x[int(file1[i][0])][int(file1[i][1])], y[int(file1[i][0])][int(file1[i][1])],
+                              10, '+')
+
+                    number_plot -= 1
+                    if number_plot == 0:
+                        break
+
+            if file_out:
+                file_out.write(repr(file1[i][0]) + '    ' + repr(file1[i][1]) + '    ' +
                               repr(file1[i][4]) + '    ' + '\n')
+
+
+def points_comparison_pix(file1, file2, n1, n2, file_out=False, my_cmbmap=False, number_plot=0, type_compare=False, pix=False):
+    # n2 >= n1
+    from numpy import zeros, size
+    from math import pi
+
+    z_1 = zeros((n2, n2 / 2))
+    z_2 = zeros((n2, n2 / 2))
+
+    n_points_1 = int(size(file1) / 9.0)
+    n_points_2 = int(size(file2) / 9.0)
+
+    x_1 = zeros((n1 + 1, n1 / 2 + 1))
+    y_1 = zeros((n1 + 1, n1 / 2 + 1))
+
+    x_2 = zeros((n2 + 1, n2 / 2 + 1))
+    y_2 = zeros((n2 + 1, n2 / 2 + 1))
+
+
+    #?
+    print n_points_1
+    print n_points_2
+    print n1
+    print n2
+
+
+
+    for i in xrange(0, n1 + 1):
+        for j in xrange(0, n1 / 2 + 1):
+            x_1[i][j] = (2.0 * i - n1) / n1 * pi
+            y_1[i][j] = 2.0 * j / n1 * pi - pi / 2.0
+
+    for i in xrange(0, n2 + 1):
+        for j in xrange(0, n2 / 2 + 1):
+            x_2[i][j] = (2.0 * i - n2) / n2 * pi
+            y_2[i][j] = 2.0 * j / n2 * pi - pi / 2.0
+
+    for i in xrange(0, n_points_1):
+        z_1[int((n2 / n1) * file1[i][0]), int((n2 / n1) * file1[i][1])] = file1[i][4]
+        z_1[int((n2 / n1) * file1[i][0]) + 1, int((n2 / n1) * file1[i][1])] = file1[i][4]
+        z_1[int((n2 / n1) * file1[i][0]), int((n2 / n1) * file1[i][1]) + 1] = file1[i][4]
+        z_1[int((n2 / n1) * file1[i][0]) + 1, int((n2 / n1) * file1[i][1]) + 1] = file1[i][4]
+
+    for i in xrange(0, n_points_2):
+        z_2[int(file2[i][0]), int(file2[i][1])] = file2[i][4]
+
+    z = z_1 * z_2
+
+    #n_points_2 ?
+    for i in xrange(0, n_points_2 + 1):
+
+        flag = 0
+        if type_compare:
+            if z_1[int(file2[i][0]), int(file2[i][1])] == z_2[int(file2[i][0]), int(file2[i][1])] and z[int(file2[i][0]), int(file2[i][1])] != 0:
+                flag = 1
+        else:
+            if z[int(file1[i][0]), int(file1[i][1])] != 0:
+                flag = 1
+
+        if flag:
+
+            if file2[i][4] == 0:
+                my_type = 'o'
+                my_color = 'green'
+                ms = 5
+
+            elif file2[i][4] == 1:
+                my_type = 'o'
+                my_color = 'blue'
+                ms = 5
+
+            elif file2[i][4] == 2:
+                my_type = 'o'
+                my_color = 'red'
+                ms = 5
+
+            if my_cmbmap:
+                from lib.cmbplot import point
+
+                if number_plot == 0:
+                    point(my_cmbmap, file2[i][2], file2[i][3], ms, my_type, my_color)
+                elif number_plot != 0:
+                    point(my_cmbmap, file2[i][2], file2[i][3], ms, my_type, my_color)
+
+                    if pix:
+                        point(my_cmbmap, x_1[(n2 / n1) * int(file1[i][0]), (n2 / n1) * int(file1[i][1])],
+                            y_1[(n2 / n1) * int(file1[i][0]), (n2 / n1) * int(file1[i][1])], 10, '+')
+                        point(my_cmbmap, x_1[(n2 / n1) * int(file1[i][0]) + 1, (n2 / n1) * int(file1[i][1])],
+                            y_1[(n2 / n1) * int(file1[i][0]) + 1, (n2 / n1) * int(file1[i][1])], 10, '+')
+                        point(my_cmbmap, x_1[(n2 / n1) * int(file1[i][0]), (n2 / n1) * int(file1[i][1]) + 1],
+                            y_1[(n2 / n1) * int(file1[i][0]), (n2 / n1) * int(file1[i][1]) + 1], 10, '+')
+                        point(my_cmbmap, x_1[(n2 / n1) * int(file1[i][0]) + 1, (n2 / n1) * int(file1[i][1]) + 1],
+                            y_1[(n2 / n1) * int(file1[i][0]) + 1, (n2 / n1) * int(file1[i][1])] + 1, 10, '+')
+
+                    number_plot -= 1
+                    if number_plot == 0:
+                        break
+
+            if file_out:
+                file_out.write(repr(file1[i][0]) + '    ' + repr(file1[i][1]) + '    ' +
+                               repr(file1[i][4]) + '    ' + '\n')
