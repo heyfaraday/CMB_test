@@ -351,7 +351,7 @@ def spin(theta, l_max, sign=+2):
         return x1 - x2
 
 
-def direct_f_int(size, cos_coef, sin_coef, l_max_dir, sign, diff=False):
+def direct_f_int(size, cos_coef, sin_coef, l_max_dir, sign=0, diff=False):
     from numpy import zeros, real, imag
     from numpy.fft import fft
 
@@ -367,17 +367,17 @@ def direct_f_int(size, cos_coef, sin_coef, l_max_dir, sign, diff=False):
 
         for j in xrange(1, size / 2):
 
-            if sign[0] == '0':
+            if sign == 0:
                 p_ = legendre_discrete(j, size, l_max_dir)
-            elif sign[0] == 'x':
+            elif sign == 1:
                 p_ = legendre_x_discrete(j, size, l_max_dir)
-            elif sign[0] == 'y':
+            elif sign == 2:
                 p_ = legendre_y_discrete(j, size, l_max_dir)
-            elif sign[0] == 'xx':
+            elif sign == 11:
                 p_ = legendre_xx_discrete(j, size, l_max_dir)
-            elif sign[0] == 'yy':
+            elif sign == 22:
                 p_ = legendre_yy_discrete(j, size, l_max_dir)
-            elif sign[0] == 'xy':
+            elif sign == 12 or sign == 21:
                 p_ = legendre_xy_discrete(j, size, l_max_dir)
             else:
                 print 'Not valid'
@@ -402,17 +402,17 @@ def direct_f_int(size, cos_coef, sin_coef, l_max_dir, sign, diff=False):
 
         for j in xrange(1, size / 2):
 
-            if sign[0] == '0':
+            if sign == 0:
                 p_ = legendre_discrete(j, size, l_max_dir)
-            elif sign[0] == 'x':
+            elif sign == 1:
                 p_ = legendre_x_discrete(j, size, l_max_dir)
-            elif sign[0] == 'y':
+            elif sign == 2:
                 p_ = legendre_y_discrete(j, size, l_max_dir)
-            elif sign[0] == 'xx':
+            elif sign == 11:
                 p_ = legendre_xx_discrete(j, size, l_max_dir)
-            elif sign[0] == 'yy':
+            elif sign == 22:
                 p_ = legendre_yy_discrete(j, size, l_max_dir)
-            elif sign[0] == 'xy':
+            elif sign == 12 or sign == 21:
                 p_ = legendre_xy_discrete(j, size, l_max_dir)
             else:
                 print 'Not valid'
@@ -443,87 +443,111 @@ def inverse_f_int(size, f, l_max_inv):
 
     f = f.T
 
-    back_cos_coef = zeros((l_max_inv + 1, l_max_inv + 1))
-    back_sin_coef = zeros((l_max_inv + 1, l_max_inv + 1))
-
     norm = 0.0
     for j in xrange(1, size / 2):
         theta = 2.0 * pi * j / size
         norm += sin(theta)
 
-    for my_m in xrange(0, l_max_inv + 1):
-        for my_l in xrange(my_m, l_max_inv + 1):
+    sum_a = zeros((l_max_inv + 1, l_max_inv + 1))
+    sum_b = zeros((l_max_inv + 1, l_max_inv + 1))
 
-            sum_a = 0.0
-            sum_b = 0.0
+    for j in xrange(1, size / 2):
 
-            for j in xrange(1, size / 2):
-                theta = 2.0 * pi * j / size
+        theta = 2.0 * pi * j / size
 
-                p_ = legendre_discrete(j, size, l_max_inv)
+        p_ = legendre_discrete(j, size, l_max_inv)
+
+        for my_m in xrange(0, l_max_inv + 1):
+            for my_l in xrange(my_m, l_max_inv + 1):
 
                 back_f = ifft(f[j][0:size])
 
                 back_fa = real(back_f)
                 back_fb = imag(back_f)
 
-                sum_a += p_[my_m][my_l] * back_fa[my_m] * sin(theta) / norm * 4 * pi
-                sum_b -= p_[my_m][my_l] * back_fb[my_m] * sin(theta) / norm * 4 * pi
+                sum_a[my_m][my_l] += p_[my_m][my_l] * back_fa[my_m] * sin(theta) / norm * 4.0 * pi
+                sum_b[my_m][my_l] -= p_[my_m][my_l] * back_fb[my_m] * sin(theta) / norm * 4.0 * pi
 
-            back_cos_coef[my_m][my_l] = sum_a
-            back_sin_coef[my_m][my_l] = sum_b
-
-    return back_cos_coef, back_sin_coef
+    return sum_a, sum_b
 
 
-def direct_point_int(phi, theta, cos_coef, sin_coef, l_max_dir, sign, diff=False):
-    from numpy import cos, sin
+def direct_point_int(phi, theta, cos_coef, sin_coef, l_max_dir, sign=0, diff=False):
+    from numpy import cos, sin, pi, zeros
 
     f = 0.0
 
+    phi -= pi
+    theta += pi / 2
+
+    sum_a = 0.0
+    sum_b = 0.0
+
+    fa = zeros(l_max_dir + 1)
+    fb = zeros(l_max_dir + 1)
+
     if diff:
 
-        if sign[0] == '0':
-            p_ = legendre_discrete(j, size, l_max_dir)
-        elif sign[0] == 'x':
-            p_ = legendre_x_discrete(j, size, l_max_dir)
-        elif sign[0] == 'y':
-            p_ = legendre_y_discrete(j, size, l_max_dir)
-        elif sign[0] == 'xx':
-            p_ = legendre_xx_discrete(j, size, l_max_dir)
-        elif sign[0] == 'yy':
-            p_ = legendre_yy_discrete(j, size, l_max_dir)
-        elif sign[0] == 'xy':
-            p_ = legendre_xy_discrete(j, size, l_max_dir)
+        if sign == 0:
+            p_ = legendre(theta, l_max_dir)
+        elif sign == 1:
+            p_ = legendre_x(theta, l_max_dir)
+        elif sign == 2:
+            p_ = legendre_y(theta, l_max_dir)
+        elif sign == 11:
+            p_ = legendre_xx(theta, l_max_dir)
+        elif sign == 22:
+            p_ = legendre_yy(theta, l_max_dir)
+        elif sign == 12:
+            p_ = legendre_xy(theta, l_max_dir)
         else:
             print 'Not valid'
 
         for m in xrange(0, l_max_dir + 1):
-            for l in xrange(0, l_max_dir + 1):
+            for l in xrange(m, l_max_dir + 1):
 
-                f += f + p_[m][l] * (-cos_coef[m][l] * sin(m * phi) + sin_coef[m][l] * cos(m * phi))
+                sum_a += p_[m][l] * cos_coef[m][l]
+                sum_b += p_[m][l] * sin_coef[m][l]
+
+            fa[m] = sum_a
+            fb[m] = sum_b
+
+            sum_a = 0.0
+            sum_b = 0.0
+
+        for m in xrange(0, l_max_dir + 1):
+            f = f + fa[m] * sin(phi * m) + fb[m] * cos(phi * m)
 
     else:
 
-        if sign[0] == '0':
-            p_ = legendre_discrete(j, size, l_max_dir)
-        elif sign[0] == 'x':
-            p_ = legendre_x_discrete(j, size, l_max_dir)
-        elif sign[0] == 'y':
-            p_ = legendre_y_discrete(j, size, l_max_dir)
-        elif sign[0] == 'xx':
-            p_ = legendre_xx_discrete(j, size, l_max_dir)
-        elif sign[0] == 'yy':
-            p_ = legendre_yy_discrete(j, size, l_max_dir)
-        elif sign[0] == 'xy':
-            p_ = legendre_xy_discrete(j, size, l_max_dir)
+        if sign == 0:
+            p_ = legendre(theta, l_max_dir)
+        elif sign == 1:
+            p_ = legendre_x(theta, l_max_dir)
+        elif sign == 2:
+            p_ = legendre_y(theta, l_max_dir)
+        elif sign == 11:
+            p_ = legendre_xx(theta, l_max_dir)
+        elif sign == 22:
+            p_ = legendre_yy(theta, l_max_dir)
+        elif sign == 12:
+            p_ = legendre_xy(theta, l_max_dir)
         else:
             print 'Not valid'
 
         for m in xrange(0, l_max_dir + 1):
-            for l in xrange(0, l_max_dir + 1):
+            for l in xrange(m, l_max_dir + 1):
 
-                f += f + p_[m][l] * (cos_coef[m][l] * cos(m * phi) + sin_coef[m][l] * sin(m * phi))
+                sum_a += p_[m][l] * cos_coef[m][l]
+                sum_b += p_[m][l] * sin_coef[m][l]
+
+            fa[m] = sum_a
+            fb[m] = sum_b
+
+            sum_a = 0.0
+            sum_b = 0.0
+
+        for m in xrange(0, l_max_dir + 1):
+            f = f + fa[m] * cos(phi * m) - fb[m] * sin(phi * m)
 
     return f
 
@@ -535,37 +559,31 @@ def inverse_f_spin_int(size, f, l_max_inv, sign=+2):
 
     f = f.T
 
-    back_cos_coef = zeros((l_max_inv + 1, l_max_inv + 1))
-    back_sin_coef = zeros((l_max_inv + 1, l_max_inv + 1))
-
     norm = 0.0
     for j in xrange(1, size / 2):
         theta = 2.0 * pi * j / size
         norm += sin(theta)
 
-    for my_m in xrange(0, l_max_inv + 1):
-        for my_l in xrange(my_m, l_max_inv + 1):
+    sum_a = zeros((l_max_inv + 1, l_max_inv + 1))
+    sum_b = zeros((l_max_inv + 1, l_max_inv + 1))
 
-            sum_a = 0.0
-            sum_b = 0.0
+    for j in xrange(1, size / 2):
 
-            for j in xrange(1, size / 2):
-                theta = 2.0 * pi * j / size
+        theta = 2.0 * pi * j / size
 
-                p_ = spin_descrete(j, size, l_max_inv, sign)
+        p_ = spin_descrete(j, size, l_max_inv, sign)
 
+        for my_m in xrange(0, l_max_inv + 1):
+            for my_l in xrange(my_m, l_max_inv + 1):
                 back_f = ifft(f[j][0:size])
 
                 back_fa = real(back_f)
                 back_fb = imag(back_f)
 
-                sum_a += p_[my_m][my_l] * back_fa[my_m] * sin(theta) / norm * 4 * pi
-                sum_b -= p_[my_m][my_l] * back_fb[my_m] * sin(theta) / norm * 4 * pi
+                sum_a[my_m][my_l] += p_[my_m][my_l] * back_fa[my_m] * sin(theta) / norm * 4.0 * pi
+                sum_b[my_m][my_l] -= p_[my_m][my_l] * back_fb[my_m] * sin(theta) / norm * 4.0 * pi
 
-            back_cos_coef[my_m][my_l] = sum_a
-            back_sin_coef[my_m][my_l] = sum_b
-
-    a_r = (back_cos_coef + back_sin_coef)/2.0
-    a_i = (back_cos_coef - back_sin_coef)/2.0
+    a_r = (sum_a + sum_b)/2.0
+    a_i = (sum_a - sum_b)/2.0
 
     return a_r, a_i

@@ -56,7 +56,13 @@ def restore_value_22(phi, theta, f, x, y, i, j):
 
 def restore_value_3(phi, theta, f, x, y, i, j):
 
-    return f[i][j] + ((f[i + 1][j] - f[i][j]) + (f[i + 1][j + 1] - f[i][j + 1])) * s2(x[i][j], phi, theta, theta) / \
+    return f[i][j] + ((f[i + 1][j] - f[i][j]) + (f[i + 1][j + 1] - f[i][j + 1])) / 2.0 * \
+                        s2(x[i][j], phi, theta, theta) / \
                         s2(x[i][j], x[i + 1][j], theta, theta) + ((f[i][j + 1] - f[i][j]) +
-                        (f[i + 1][j + 1] - f[i + 1][j])) * s2(phi, phi, y[i][j], theta) / \
+                        (f[i + 1][j + 1] - f[i + 1][j])) / 2.0 * s2(phi, phi, y[i][j], theta) / \
                         s2(phi, phi, y[i][j], y[i][j + 1])
+
+
+def restore_value_4(phi, theta, cos_coef, sin_coef, l_max_dir, sign=0, diff=False):
+    from lib.fourier import direct_point_int
+    return direct_point_int(phi, theta, cos_coef, sin_coef, l_max_dir, sign=sign, diff=diff)

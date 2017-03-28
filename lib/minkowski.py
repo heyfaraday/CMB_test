@@ -768,10 +768,11 @@ def null_points(x, y, f, fx, fy, my_file=False, my_cmbmap=False):
     return whitelist
 
 
-def singular_points(x, y, q, u, qx, qy, ux, uy, my_file=False, my_cmbmap=False, print_num=False):
+def singular_points(x, y, q, u, qx, qy, ux, uy, cos_coef_q, sin_coef_q, cos_coef_u, sin_coef_u, l_max_dir,
+                    my_file=False, my_cmbmap=False, print_num=False, number=0):
     from numpy import zeros
     from math import fabs, pi
-    from lib.distance import s2, cross
+    from lib.distance import s2, cross, restore_value_4
 
     n = q.shape[0] - 1
 
@@ -801,253 +802,470 @@ def singular_points(x, y, q, u, qx, qy, ux, uy, my_file=False, my_cmbmap=False, 
             h_theta = fabs(y[n / 2 + 1][n / 4 + 1])
             h_phi = fabs(x[n / 4][j] - x[n / 4 + 1][j])
 
-            if u[i][j] * u[i][j + 1] < 0.0:
+            if number == 0:
 
-                if u[i][j] * u[i + 1][j] < 0.0:
+                if u[i][j] * u[i][j + 1] < 0.0:
 
-                    phi1a = x[i][j]
-                    theta1a = y[i][j] + h_theta * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i][j + 1]))
+                    if u[i][j] * u[i + 1][j] < 0.0:
 
-                    phi1b = x[i][j] + h_phi * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i + 1][j]))
-                    theta1b = y[i][j]
+                        phi1a = x[i][j]
+                        theta1a = y[i][j] + h_theta * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i][j + 1]))
 
-                    z_x[i][j] = 1
+                        phi1b = x[i][j] + h_phi * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i + 1][j]))
+                        theta1b = y[i][j]
+
+                        z_x[i][j] = 1
+
+                    elif u[i + 1][j] * u[i + 1][j + 1] < 0.0:
+
+                        phi1a = x[i][j]
+                        theta1a = y[i][j] + h_theta * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i][j + 1]))
+
+                        phi1b = x[i + 1][j]
+                        theta1b = y[i + 1][j] + h_theta * fabs(u[i + 1][j]) \
+                                                / (fabs(u[i + 1][j]) + fabs(u[i + 1][j + 1]))
+
+                        z_x[i][j] = 1
+
+                    elif u[i][j + 1] * u[i + 1][j + 1] < 0.0:
+
+                        phi1a = x[i][j]
+                        theta1a = y[i][j] + h_theta * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i][j + 1]))
+
+                        phi1b = x[i][j + 1] + h_phi * fabs(u[i][j + 1]) / (fabs(u[i][j + 1]) + fabs(u[i + 1][j + 1]))
+                        theta1b = y[i][j + 1]
+
+                        z_x[i][j] = 1
+
+                elif u[i][j] * u[i + 1][j] < 0.0:
+
+                    if u[i + 1][j] * u[i + 1][j + 1] < 0.0:
+
+                        phi1a = x[i][j] + h_phi * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i + 1][j]))
+                        theta1a = y[i][j]
+
+                        phi1b = x[i + 1][j]
+                        theta1b = y[i + 1][j] + h_theta * fabs(u[i + 1][j]) \
+                                                / (fabs(u[i + 1][j]) + fabs(u[i + 1][j + 1]))
+
+                        z_x[i][j] = 1
+
+                    elif u[i][j + 1] * u[i + 1][j + 1] < 0.0:
+
+                        phi1a = x[i][j] + h_phi * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i + 1][j]))
+                        theta1a = y[i][j]
+
+                        phi1b = x[i][j + 1] + h_phi * fabs(u[i][j + 1]) / (fabs(u[i][j + 1]) + fabs(u[i + 1][j + 1]))
+                        theta1b = y[i][j + 1]
+
+                        z_x[i][j] = 1
 
                 elif u[i + 1][j] * u[i + 1][j + 1] < 0.0:
 
-                    phi1a = x[i][j]
-                    theta1a = y[i][j] + h_theta * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i][j + 1]))
+                    if u[i][j + 1] * u[i + 1][j + 1] < 0.0:
+                        phi1a = x[i + 1][j]
+                        theta1a = y[i + 1][j] + h_theta * fabs(u[i + 1][j]) / (
+                            fabs(u[i + 1][j]) + fabs(u[i + 1][j + 1]))
 
-                    phi1b = x[i + 1][j]
-                    theta1b = y[i + 1][j] + h_theta * fabs(u[i + 1][j]) / (fabs(u[i + 1][j]) + fabs(u[i + 1][j + 1]))
+                        phi1b = x[i][j + 1] + h_phi * fabs(u[i][j + 1]) / (fabs(u[i][j + 1]) + fabs(u[i + 1][j + 1]))
+                        theta1b = y[i][j + 1]
 
-                    z_x[i][j] = 1
+                        z_x[i][j] = 1
 
-                elif u[i][j + 1] * u[i + 1][j + 1] < 0.0:
+                if q[i][j] * q[i][j + 1] < 0.0:
 
-                    phi1a = x[i][j]
-                    theta1a = y[i][j] + h_theta * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i][j + 1]))
+                    if q[i][j] * q[i + 1][j] < 0.0:
 
-                    phi1b = x[i][j + 1] + h_phi * fabs(u[i][j + 1]) / (fabs(u[i][j + 1]) + fabs(u[i + 1][j + 1]))
-                    theta1b = y[i][j + 1]
+                        phi2a = x[i][j]
+                        theta2a = y[i][j] + h_theta * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i][j + 1]))
 
-                    z_x[i][j] = 1
+                        phi2b = x[i][j] + h_phi * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i + 1][j]))
+                        theta2b = y[i][j]
 
-            elif u[i][j] * u[i + 1][j] < 0.0:
+                        z_y[i][j] = 1
 
-                if u[i + 1][j] * u[i + 1][j + 1] < 0.0:
+                    elif q[i + 1][j] * q[i + 1][j + 1] < 0.0:
 
-                    phi1a = x[i][j] + h_phi * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i + 1][j]))
-                    theta1a = y[i][j]
+                        phi2a = x[i][j]
+                        theta2a = y[i][j] + h_theta * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i][j + 1]))
 
-                    phi1b = x[i + 1][j]
-                    theta1b = y[i + 1][j] + h_theta * fabs(u[i + 1][j]) / (fabs(u[i + 1][j]) + fabs(u[i + 1][j + 1]))
+                        phi2b = x[i + 1][j]
+                        theta2b = y[i + 1][j] + h_theta * fabs(q[i + 1][j]) \
+                                                / (fabs(q[i + 1][j]) + fabs(q[i + 1][j + 1]))
 
-                    z_x[i][j] = 1
+                        z_y[i][j] = 1
 
-                elif u[i][j + 1] * u[i + 1][j + 1] < 0.0:
+                    elif q[i][j + 1] * q[i + 1][j + 1] < 0.0:
 
-                    phi1a = x[i][j] + h_phi * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i + 1][j]))
-                    theta1a = y[i][j]
+                        phi2a = x[i][j]
+                        theta2a = y[i][j] + h_theta * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i][j + 1]))
 
-                    phi1b = x[i][j + 1] + h_phi * fabs(u[i][j + 1]) / (fabs(u[i][j + 1]) + fabs(u[i + 1][j + 1]))
-                    theta1b = y[i][j + 1]
+                        phi2b = x[i][j + 1] + h_phi * fabs(q[i][j + 1]) / (fabs(q[i][j + 1]) + fabs(q[i + 1][j + 1]))
+                        theta2b = y[i][j + 1]
 
-                    z_x[i][j] = 1
+                        z_y[i][j] = 1
 
-            elif u[i + 1][j] * u[i + 1][j + 1] < 0.0:
+                elif q[i][j] * q[i + 1][j] < 0.0:
 
-                if u[i][j + 1] * u[i + 1][j + 1] < 0.0:
-                    phi1a = x[i + 1][j]
-                    theta1a = y[i + 1][j] + h_theta * fabs(u[i + 1][j]) / (
-                        fabs(u[i + 1][j]) + fabs(u[i + 1][j + 1]))
+                    if q[i + 1][j] * q[i + 1][j + 1] < 0.0:
 
-                    phi1b = x[i][j + 1] + h_phi * fabs(u[i][j + 1]) / (fabs(u[i][j + 1]) + fabs(u[i + 1][j + 1]))
-                    theta1b = y[i][j + 1]
+                        phi2a = x[i][j] + h_phi * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i + 1][j]))
+                        theta2a = y[i][j]
 
-                    z_x[i][j] = 1
+                        phi2b = x[i + 1][j]
+                        theta2b = y[i + 1][j] + h_theta * fabs(q[i + 1][j]) / \
+                                                (fabs(q[i + 1][j]) + fabs(q[i + 1][j + 1]))
 
-            if q[i][j] * q[i][j + 1] < 0.0:
+                        z_y[i][j] = 1
 
-                if q[i][j] * q[i + 1][j] < 0.0:
+                    elif q[i][j + 1] * q[i + 1][j + 1] < 0.0:
 
-                    phi2a = x[i][j]
-                    theta2a = y[i][j] + h_theta * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i][j + 1]))
+                        phi2a = x[i][j] + h_phi * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i + 1][j]))
+                        theta2a = y[i][j]
 
-                    phi2b = x[i][j] + h_phi * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i + 1][j]))
-                    theta2b = y[i][j]
+                        phi2b = x[i][j + 1] + h_phi * fabs(q[i][j + 1]) / (fabs(q[i][j + 1]) + fabs(q[i + 1][j + 1]))
+                        theta2b = y[i][j + 1]
 
-                    z_y[i][j] = 1
+                        z_y[i][j] = 1
 
                 elif q[i + 1][j] * q[i + 1][j + 1] < 0.0:
 
-                    phi2a = x[i][j]
-                    theta2a = y[i][j] + h_theta * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i][j + 1]))
+                    if q[i][j + 1] * q[i + 1][j + 1] < 0.0:
+                        phi2a = x[i + 1][j]
+                        theta2a = y[i + 1][j] + h_theta * fabs(q[i + 1][j]) / (
+                            fabs(q[i + 1][j]) + fabs(q[i + 1][j + 1]))
 
-                    phi2b = x[i + 1][j]
-                    theta2b = y[i + 1][j] + h_theta * fabs(q[i + 1][j]) / (fabs(q[i + 1][j]) + fabs(q[i + 1][j + 1]))
+                        phi2b = x[i][j + 1] + h_phi * fabs(q[i][j + 1]) / (fabs(q[i][j + 1]) + fabs(q[i + 1][j + 1]))
+                        theta2b = y[i][j + 1]
 
-                    z_y[i][j] = 1
+                        z_y[i][j] = 1
 
-                elif q[i][j + 1] * q[i + 1][j + 1] < 0.0:
+                if z_y[i][j] != 0 and z_x[i][j] != 0:
 
-                    phi2a = x[i][j]
-                    theta2a = y[i][j] + h_theta * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i][j + 1]))
+                    flag = 0
 
-                    phi2b = x[i][j + 1] + h_phi * fabs(q[i][j + 1]) / (fabs(q[i][j + 1]) + fabs(q[i + 1][j + 1]))
-                    theta2b = y[i][j + 1]
+                    phi_precision = 0.0
+                    theta_precision = 0.0
 
-                    z_y[i][j] = 1
+                    phi_a, theta_a = cross(phi1a, theta1a, phi1b, theta1b, phi2a, theta2a, phi2b, theta2b)
 
-            elif q[i][j] * q[i + 1][j] < 0.0:
+                    if (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= theta_a <= y[i][j + 1]):
 
-                if q[i + 1][j] * q[i + 1][j + 1] < 0.0:
+                        phi_precision = phi_a
+                        theta_precision = theta_a
+                        flag = 1
 
-                    phi2a = x[i][j] + h_phi * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i + 1][j]))
-                    theta2a = y[i][j]
+                    elif (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= - theta_a <= y[i][j + 1]):
 
-                    phi2b = x[i + 1][j]
-                    theta2b = y[i + 1][j] + h_theta * fabs(q[i + 1][j]) / (fabs(q[i + 1][j]) + fabs(q[i + 1][j + 1]))
+                        phi_precision = phi_a
+                        theta_precision = - theta_a
+                        flag = 1
 
-                    z_y[i][j] = 1
+                    elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
+                            and (y[i][j] <= theta_a <= y[i][j + 1]):
 
-                elif q[i][j + 1] * q[i + 1][j + 1] < 0.0:
+                        phi_precision = phi_a + pi
+                        theta_precision = theta_a
+                        flag = 1
 
-                    phi2a = x[i][j] + h_phi * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i + 1][j]))
-                    theta2a = y[i][j]
+                    elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
+                            and (y[i][j] <= theta_a <= y[i][j + 1]):
 
-                    phi2b = x[i][j + 1] + h_phi * fabs(q[i][j + 1]) / (fabs(q[i][j + 1]) + fabs(q[i + 1][j + 1]))
-                    theta2b = y[i][j + 1]
+                        phi_precision = phi_a - pi
+                        theta_precision = theta_a
+                        flag = 1
 
-                    z_y[i][j] = 1
+                    elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
+                            and (y[i][j] <= - theta_a <= y[i][j + 1]):
 
-            elif q[i + 1][j] * q[i + 1][j + 1] < 0.0:
+                        phi_precision = phi_a + pi
+                        theta_precision = - theta_a
+                        flag = 1
 
-                if q[i][j + 1] * q[i + 1][j + 1] < 0.0:
-                    phi2a = x[i + 1][j]
-                    theta2a = y[i + 1][j] + h_theta * fabs(q[i + 1][j]) / (
+                    elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
+                            and (y[i][j] <= - theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a - pi
+                        theta_precision = - theta_a
+                        flag = 1
+
+                    if flag == 1:
+
+                        qx_precision = restore_value_4(phi_precision, theta_precision,
+                                                 cos_coef_q, sin_coef_q, l_max_dir, sign=1, diff=True)
+                        qy_precision = restore_value_4(phi_precision, theta_precision,
+                                                       cos_coef_q, sin_coef_q, l_max_dir, sign=2)
+                        ux_precision = restore_value_4(phi_precision, theta_precision,
+                                                       cos_coef_u, sin_coef_u, l_max_dir, sign=1, diff=True)
+                        uy_precision = restore_value_4(phi_precision, theta_precision,
+                                                       cos_coef_u, sin_coef_u, l_max_dir, sign=2)
+
+                        cond_answ = condition_2(qx_precision, qy_precision, ux_precision, uy_precision)
+
+                        if cond_answ == 0:
+                            my_type = 'o'
+                            g += 1
+                            n_saddle += 1
+                            ms = 15
+
+                        if cond_answ == 1:
+                            my_type = '+'
+                            g += 1
+                            n_beak += 1
+                            ms = 100
+
+                        if cond_answ == 2:
+                            my_type = 'x'
+                            g -= 1
+                            n_comet += 1
+                            ms = 100
+
+                        if my_cmbmap:
+                            from lib.cmbplot import point
+
+                            point(my_cmbmap, phi_precision, theta_precision, ms, my_type)
+
+                        if my_file:
+                            my_file.write(repr(i) + '    ' + repr(j) + '    ' +
+                                          repr(phi_precision) + '    ' + repr(theta_precision) + '   ' +
+                                          repr(cond_answ) + '    ' + repr(qx_precision) + '    ' +
+                                          repr(qy_precision) + '    ' + repr(ux_precision) + '    ' +
+                                          repr(uy_precision) + '\n')
+            elif number != 0:
+
+                if u[i][j] * u[i][j + 1] < 0.0:
+
+                    if u[i][j] * u[i + 1][j] < 0.0:
+
+                        phi1a = x[i][j]
+                        theta1a = y[i][j] + h_theta * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i][j + 1]))
+
+                        phi1b = x[i][j] + h_phi * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i + 1][j]))
+                        theta1b = y[i][j]
+
+                        z_x[i][j] = 1
+
+                    elif u[i + 1][j] * u[i + 1][j + 1] < 0.0:
+
+                        phi1a = x[i][j]
+                        theta1a = y[i][j] + h_theta * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i][j + 1]))
+
+                        phi1b = x[i + 1][j]
+                        theta1b = y[i + 1][j] + h_theta * fabs(u[i + 1][j]) / (
+                        fabs(u[i + 1][j]) + fabs(u[i + 1][j + 1]))
+
+                        z_x[i][j] = 1
+
+                    elif u[i][j + 1] * u[i + 1][j + 1] < 0.0:
+
+                        phi1a = x[i][j]
+                        theta1a = y[i][j] + h_theta * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i][j + 1]))
+
+                        phi1b = x[i][j + 1] + h_phi * fabs(u[i][j + 1]) / (fabs(u[i][j + 1]) + fabs(u[i + 1][j + 1]))
+                        theta1b = y[i][j + 1]
+
+                        z_x[i][j] = 1
+
+                elif u[i][j] * u[i + 1][j] < 0.0:
+
+                    if u[i + 1][j] * u[i + 1][j + 1] < 0.0:
+
+                        phi1a = x[i][j] + h_phi * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i + 1][j]))
+                        theta1a = y[i][j]
+
+                        phi1b = x[i + 1][j]
+                        theta1b = y[i + 1][j] + h_theta * fabs(u[i + 1][j]) / (
+                        fabs(u[i + 1][j]) + fabs(u[i + 1][j + 1]))
+
+                        z_x[i][j] = 1
+
+                    elif u[i][j + 1] * u[i + 1][j + 1] < 0.0:
+
+                        phi1a = x[i][j] + h_phi * fabs(u[i][j]) / (fabs(u[i][j]) + fabs(u[i + 1][j]))
+                        theta1a = y[i][j]
+
+                        phi1b = x[i][j + 1] + h_phi * fabs(u[i][j + 1]) / (fabs(u[i][j + 1]) + fabs(u[i + 1][j + 1]))
+                        theta1b = y[i][j + 1]
+
+                        z_x[i][j] = 1
+
+                elif u[i + 1][j] * u[i + 1][j + 1] < 0.0:
+
+                    if u[i][j + 1] * u[i + 1][j + 1] < 0.0:
+                        phi1a = x[i + 1][j]
+                        theta1a = y[i + 1][j] + h_theta * fabs(u[i + 1][j]) / (
+                            fabs(u[i + 1][j]) + fabs(u[i + 1][j + 1]))
+
+                        phi1b = x[i][j + 1] + h_phi * fabs(u[i][j + 1]) / (fabs(u[i][j + 1]) + fabs(u[i + 1][j + 1]))
+                        theta1b = y[i][j + 1]
+
+                        z_x[i][j] = 1
+
+                if q[i][j] * q[i][j + 1] < 0.0:
+
+                    if q[i][j] * q[i + 1][j] < 0.0:
+
+                        phi2a = x[i][j]
+                        theta2a = y[i][j] + h_theta * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i][j + 1]))
+
+                        phi2b = x[i][j] + h_phi * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i + 1][j]))
+                        theta2b = y[i][j]
+
+                        z_y[i][j] = 1
+
+                    elif q[i + 1][j] * q[i + 1][j + 1] < 0.0:
+
+                        phi2a = x[i][j]
+                        theta2a = y[i][j] + h_theta * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i][j + 1]))
+
+                        phi2b = x[i + 1][j]
+                        theta2b = y[i + 1][j] + h_theta * fabs(q[i + 1][j]) / (
                         fabs(q[i + 1][j]) + fabs(q[i + 1][j + 1]))
 
-                    phi2b = x[i][j + 1] + h_phi * fabs(q[i][j + 1]) / (fabs(q[i][j + 1]) + fabs(q[i + 1][j + 1]))
-                    theta2b = y[i][j + 1]
+                        z_y[i][j] = 1
 
-                    z_y[i][j] = 1
+                    elif q[i][j + 1] * q[i + 1][j + 1] < 0.0:
 
-            if z_y[i][j] != 0 and z_x[i][j] != 0:
+                        phi2a = x[i][j]
+                        theta2a = y[i][j] + h_theta * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i][j + 1]))
 
-                flag = 0
+                        phi2b = x[i][j + 1] + h_phi * fabs(q[i][j + 1]) / (fabs(q[i][j + 1]) + fabs(q[i + 1][j + 1]))
+                        theta2b = y[i][j + 1]
 
-                phi_precision = 0.0
-                theta_precision = 0.0
+                        z_y[i][j] = 1
 
-                phi_a, theta_a = cross(phi1a, theta1a, phi1b, theta1b, phi2a, theta2a, phi2b, theta2b)
+                elif q[i][j] * q[i + 1][j] < 0.0:
 
-                if (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= theta_a <= y[i][j + 1]):
+                    if q[i + 1][j] * q[i + 1][j + 1] < 0.0:
 
-                    phi_precision = phi_a
-                    theta_precision = theta_a
-                    flag = 1
+                        phi2a = x[i][j] + h_phi * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i + 1][j]))
+                        theta2a = y[i][j]
 
-                elif (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= - theta_a <= y[i][j + 1]):
+                        phi2b = x[i + 1][j]
+                        theta2b = y[i + 1][j] + h_theta * fabs(q[i + 1][j]) / (
+                        fabs(q[i + 1][j]) + fabs(q[i + 1][j + 1]))
 
-                    phi_precision = phi_a
-                    theta_precision = - theta_a
-                    flag = 1
+                        z_y[i][j] = 1
 
-                elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
-                        and (y[i][j] <= theta_a <= y[i][j + 1]):
+                    elif q[i][j + 1] * q[i + 1][j + 1] < 0.0:
 
-                    phi_precision = phi_a + pi
-                    theta_precision = theta_a
-                    flag = 1
+                        phi2a = x[i][j] + h_phi * fabs(q[i][j]) / (fabs(q[i][j]) + fabs(q[i + 1][j]))
+                        theta2a = y[i][j]
 
-                elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
-                        and (y[i][j] <= theta_a <= y[i][j + 1]):
+                        phi2b = x[i][j + 1] + h_phi * fabs(q[i][j + 1]) / (fabs(q[i][j + 1]) + fabs(q[i + 1][j + 1]))
+                        theta2b = y[i][j + 1]
 
-                    phi_precision = phi_a - pi
-                    theta_precision = theta_a
-                    flag = 1
+                        z_y[i][j] = 1
 
-                elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
-                        and (y[i][j] <= - theta_a <= y[i][j + 1]):
+                elif q[i + 1][j] * q[i + 1][j + 1] < 0.0:
 
-                    phi_precision = phi_a + pi
-                    theta_precision = - theta_a
-                    flag = 1
+                    if q[i][j + 1] * q[i + 1][j + 1] < 0.0:
+                        phi2a = x[i + 1][j]
+                        theta2a = y[i + 1][j] + h_theta * fabs(q[i + 1][j]) / (
+                            fabs(q[i + 1][j]) + fabs(q[i + 1][j + 1]))
 
-                elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
-                        and (y[i][j] <= - theta_a <= y[i][j + 1]):
+                        phi2b = x[i][j + 1] + h_phi * fabs(q[i][j + 1]) / (fabs(q[i][j + 1]) + fabs(q[i + 1][j + 1]))
+                        theta2b = y[i][j + 1]
 
-                    phi_precision = phi_a - pi
-                    theta_precision = - theta_a
-                    flag = 1
+                        z_y[i][j] = 1
 
-                if flag == 1:
+                if z_y[i][j] != 0 and z_x[i][j] != 0:
 
-                    qx_precision = qx[i][j] + (qx[i + 1][j] - qx[i][j]) * \
-                                    s2(phi_precision, x[i][j], theta_precision, theta_precision) / \
-                                    s2(x[i + 1][j], x[i][j], theta_precision, theta_precision) + \
-                                    (qx[i][j + 1] - qx[i][j]) * \
-                                    s2(phi_precision, phi_precision, theta_precision, y[i][j]) / \
-                                    s2(phi_precision, phi_precision, y[i][j], y[i][j + 1])
+                    flag = 0
 
-                    qy_precision = qy[i][j] + (qy[i + 1][j] - qy[i][j]) * \
-                                    s2(phi_precision, x[i][j], theta_precision, theta_precision) / \
-                                    s2(x[i + 1][j], x[i][j], theta_precision, theta_precision) + \
-                                    (qy[i][j + 1] - qy[i][j]) * \
-                                    s2(phi_precision, phi_precision, theta_precision, y[i][j]) / \
-                                    s2(phi_precision, phi_precision, y[i][j], y[i][j + 1])
+                    phi_precision = 0.0
+                    theta_precision = 0.0
 
-                    ux_precision = ux[i][j] + (ux[i + 1][j] - ux[i][j]) * \
-                                    s2(phi_precision, x[i][j], theta_precision, theta_precision) / \
-                                    s2(x[i + 1][j], x[i][j], theta_precision, theta_precision) + \
-                                    (ux[i][j + 1] - ux[i][j]) * \
-                                    s2(phi_precision, phi_precision, theta_precision, y[i][j]) / \
-                                    s2(phi_precision, phi_precision, y[i][j], y[i][j + 1])
+                    phi_a, theta_a = cross(phi1a, theta1a, phi1b, theta1b, phi2a, theta2a, phi2b, theta2b)
 
-                    uy_precision = uy[i][j] + (uy[i + 1][j] - uy[i][j]) * \
-                                    s2(phi_precision, x[i][j], theta_precision, theta_precision) / \
-                                    s2(x[i + 1][j], x[i][j], theta_precision, theta_precision) + \
-                                    (uy[i][j + 1] - uy[i][j]) * \
-                                    s2(phi_precision, phi_precision, theta_precision, y[i][j]) / \
-                                    s2(phi_precision, phi_precision, y[i][j], y[i][j + 1])
+                    if (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= theta_a <= y[i][j + 1]):
 
-                    cond_answ = condition_2(qx_precision, qy_precision, ux_precision, uy_precision)
+                        phi_precision = phi_a
+                        theta_precision = theta_a
+                        flag = 1
 
-                    if cond_answ == 0:
-                        my_type = 'o'
-                        g += 1
-                        n_saddle += 1
-                        ms = 15
+                    elif (x[i][j] <= phi_a <= x[i + 1][j]) and (y[i][j] <= - theta_a <= y[i][j + 1]):
 
-                    if cond_answ == 1:
-                        my_type = '+'
-                        g += 1
-                        n_beak += 1
-                        ms = 100
+                        phi_precision = phi_a
+                        theta_precision = - theta_a
+                        flag = 1
 
-                    if cond_answ == 2:
-                        my_type = 'x'
-                        g -= 1
-                        n_comet -= 1
-                        ms = 100
+                    elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
+                            and (y[i][j] <= theta_a <= y[i][j + 1]):
 
-                    if my_cmbmap:
-                        from lib.cmbplot import point
+                        phi_precision = phi_a + pi
+                        theta_precision = theta_a
+                        flag = 1
 
-                        point(my_cmbmap, phi_precision, theta_precision, ms, my_type)
+                    elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
+                            and (y[i][j] <= theta_a <= y[i][j + 1]):
 
-                    if my_file:
-                        my_file.write(repr(i) + '    ' + repr(j) + '    ' +
-                                      repr(phi_precision) + '    ' + repr(theta_precision) + '   ' +
-                                      repr(cond_answ) + '    ' + repr(qx_precision) + '    ' +
-                                      repr(qy_precision) + '    ' + repr(ux_precision) + '    ' +
-                                      repr(uy_precision) + '\n')
+                        phi_precision = phi_a - pi
+                        theta_precision = theta_a
+                        flag = 1
 
-                    if print_num:
-                        print 'saddles:', n_saddle
-                        print 'beaks:', n_beak
-                        print 'comets', n_comet
+                    elif (phi_a < 0) and (x[i][j] <= phi_a + pi <= x[i + 1][j]) \
+                            and (y[i][j] <= - theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a + pi
+                        theta_precision = - theta_a
+                        flag = 1
+
+                    elif (phi_a > 0) and (x[i][j] <= phi_a - pi <= x[i + 1][j]) \
+                            and (y[i][j] <= - theta_a <= y[i][j + 1]):
+
+                        phi_precision = phi_a - pi
+                        theta_precision = - theta_a
+                        flag = 1
+
+                    if flag == 1:
+
+                        qx_precision = restore_value_4(phi_precision, theta_precision,
+                                                       cos_coef_q, sin_coef_q, l_max_dir, sign=1, diff=True)
+                        qy_precision = restore_value_4(phi_precision, theta_precision,
+                                                       cos_coef_q, sin_coef_q, l_max_dir, sign=2)
+                        ux_precision = restore_value_4(phi_precision, theta_precision,
+                                                       cos_coef_u, sin_coef_u, l_max_dir, sign=1, diff=True)
+                        uy_precision = restore_value_4(phi_precision, theta_precision,
+                                                       cos_coef_u, sin_coef_u, l_max_dir, sign=2)
+
+                        cond_answ = condition_2(qx_precision, qy_precision, ux_precision, uy_precision)
+
+                        if cond_answ == 0:
+                            my_type = 'o'
+                            g += 1
+                            n_saddle += 1
+                            ms = 15
+
+                        if cond_answ == 1:
+                            my_type = '+'
+                            g += 1
+                            n_beak += 1
+                            ms = 100
+
+                        if cond_answ == 2:
+                            my_type = 'x'
+                            g -= 1
+                            n_comet += 1
+                            ms = 100
+
+                        if my_cmbmap:
+                            from lib.cmbplot import point
+
+                            point(my_cmbmap, phi_precision, theta_precision, ms, my_type)
+
+                        if my_file:
+                            my_file.write(repr(i) + '    ' + repr(j) + '    ' +
+                                          repr(phi_precision) + '    ' + repr(theta_precision) + '   ' +
+                                          repr(cond_answ) + '    ' + repr(qx_precision) + '    ' +
+                                          repr(qy_precision) + '    ' + repr(ux_precision) + '    ' +
+                                          repr(uy_precision) + '\n')
+
+                        number -= 1
+                        if number == 0:
+                            return n_saddle, n_beak, n_comet
+    if print_num:
+        return n_saddle, n_beak, n_comet
 
 
 def points_comparison_single(file1, n, file_out=False, my_cmbmap=False, number_plot=0, pix=False):
@@ -1076,17 +1294,17 @@ def points_comparison_single(file1, n, file_out=False, my_cmbmap=False, number_p
             if file1[i][4] == 0:
                 my_type = 'o'
                 my_color = 'green'
-                ms = 5
+                ms = 20
 
             elif file1[i][4] == 1:
                 my_type = 'o'
                 my_color = 'blue'
-                ms = 5
+                ms = 20
 
             elif file1[i][4] == 2:
                 my_type = 'o'
                 my_color = 'red'
-                ms = 5
+                ms = 20
 
             if my_cmbmap:
                 from lib.cmbplot import point
@@ -1186,7 +1404,8 @@ def points_comparison(file1, file2, n, file_out=False, my_cmbmap=False, number_p
                               repr(file1[i][4]) + '    ' + '\n')
 
 
-def points_comparison_pix(file1, file2, n1, n2, file_out=False, my_cmbmap=False, number_plot=0, type_compare=False, pix=False):
+def points_comparison_pix(file1, file2, n1, n2, file_out=False, my_cmbmap=False, number_plot=0,
+                          type_compare=False, pix=False):
     # n2 >= n1
     from numpy import zeros, size
     from math import pi
